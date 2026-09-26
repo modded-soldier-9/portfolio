@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { siteConfig } from '@/config/site';
 import { projects } from '@/data/projects';
@@ -18,8 +18,16 @@ import {
   ProjectAppIcon,
   CertificateIcon,
   BriefcaseIcon,
+  CalculatorIcon,
+  PaintIcon,
+  MinesweeperIcon,
+  SolitaireIcon,
+  HeartsIcon,
+  UserAvatarSvg,
 } from './AeroIcons';
 import { aeroSound } from './AeroSound';
+import { animateStartMenuOpen, animateFlyoutOpen } from '@/core/animation';
+import { useOS } from '@/state/os-store';
 import type { ExplorerSection } from './windows/SystemWindow';
 
 interface StartMenuProps {
@@ -39,13 +47,32 @@ export const StartMenu: React.FC<StartMenuProps> = ({
   const [search, setSearch] = useState('');
   const [showShutMenu, setShowShutMenu] = useState(false);
 
+  const menuRef = useRef<HTMLDivElement>(null);
+  const shutMenuRef = useRef<HTMLDivElement>(null);
+
+  const { userProfile, lockOrLogOff, sleepSystem, restartSystem, files } = useOS();
+  const recycleCount = useMemo(
+    () => files.filter((f) => f.folder === 'RecycleBin').length,
+    [files]
+  );
+
+  useEffect(() => {
+    animateStartMenuOpen(menuRef.current);
+  }, []);
+
+  useEffect(() => {
+    if (showShutMenu) {
+      animateFlyoutOpen(shutMenuRef.current);
+    }
+  }, [showShutMenu]);
+
   const pinnedPrograms = useMemo(
     () => [
       {
         id: 'explorer',
-        title: 'Portfolio Explorer',
-        subtitle: 'Projects, Experience & Skills',
-        icon: <ExplorerIcon size={32} />,
+        title: 'Windows Explorer',
+        subtitle: 'Portfolio, Documents & Computer',
+        icon: <ExplorerIcon size={30} />,
         action: () => {
           onOpenExplorerSection('overview');
           onCloseMenu();
@@ -55,9 +82,69 @@ export const StartMenu: React.FC<StartMenuProps> = ({
         id: 'system',
         title: 'System Properties',
         subtitle: 'About Mohamed Elsheikh & Specs',
-        icon: <ComputerIcon size={32} />,
+        icon: <ComputerIcon size={30} />,
         action: () => {
           onOpenWindow('system');
+          onCloseMenu();
+        },
+      },
+      {
+        id: 'notepad',
+        title: 'Notepad',
+        subtitle: 'Text Editor & Resume_Mohamed.txt',
+        icon: <NotepadIcon size={30} />,
+        action: () => {
+          onOpenWindow('notepad');
+          onCloseMenu();
+        },
+      },
+      {
+        id: 'calculator',
+        title: 'Calculator',
+        subtitle: 'Standard & Scientific Aero Calc',
+        icon: <CalculatorIcon size={30} />,
+        action: () => {
+          onOpenWindow('calculator');
+          onCloseMenu();
+        },
+      },
+      {
+        id: 'paint',
+        title: 'Paint',
+        subtitle: 'Create & edit drawings and shapes',
+        icon: <PaintIcon size={30} />,
+        action: () => {
+          onOpenWindow('paint');
+          onCloseMenu();
+        },
+      },
+      {
+        id: 'minesweeper',
+        title: 'Minesweeper',
+        subtitle: 'Classic Aero logic puzzle game',
+        icon: <MinesweeperIcon size={30} />,
+        action: () => {
+          onOpenWindow('minesweeper');
+          onCloseMenu();
+        },
+      },
+      {
+        id: 'solitaire',
+        title: 'Solitaire',
+        subtitle: 'Klondike card game (Draw 1 / 3)',
+        icon: <SolitaireIcon size={30} />,
+        action: () => {
+          onOpenWindow('solitaire');
+          onCloseMenu();
+        },
+      },
+      {
+        id: 'hearts',
+        title: 'Hearts',
+        subtitle: '4-player trick-taking card game',
+        icon: <HeartsIcon size={30} />,
+        action: () => {
+          onOpenWindow('hearts');
           onCloseMenu();
         },
       },
@@ -65,39 +152,9 @@ export const StartMenu: React.FC<StartMenuProps> = ({
         id: 'security',
         title: 'Cyber Security Center',
         subtitle: 'Leadership & 15+ Certifications',
-        icon: <SecurityShieldIcon size={32} />,
+        icon: <SecurityShieldIcon size={30} />,
         action: () => {
           onOpenWindow('security');
-          onCloseMenu();
-        },
-      },
-      {
-        id: 'projects-direct',
-        title: 'Featured Projects (6)',
-        subtitle: 'Qodex, Midostransport, Honeypot...',
-        icon: <ProjectAppIcon size={32} />,
-        action: () => {
-          onOpenExplorerSection('projects');
-          onCloseMenu();
-        },
-      },
-      {
-        id: 'contact',
-        title: 'Contact & WhatsApp',
-        subtitle: 'Send direct message or email',
-        icon: <ContactMailIcon size={32} />,
-        action: () => {
-          onOpenWindow('contact');
-          onCloseMenu();
-        },
-      },
-      {
-        id: 'notepad',
-        title: 'Resume.txt — Notepad',
-        subtitle: 'Plain-text CV & Highlighter',
-        icon: <NotepadIcon size={32} />,
-        action: () => {
-          onOpenWindow('notepad');
           onCloseMenu();
         },
       },
@@ -105,9 +162,19 @@ export const StartMenu: React.FC<StartMenuProps> = ({
         id: 'cmd',
         title: 'Command Prompt',
         subtitle: 'Interactive CLI terminal (cmd.exe)',
-        icon: <CmdIcon size={32} />,
+        icon: <CmdIcon size={30} />,
         action: () => {
           onOpenWindow('cmd');
+          onCloseMenu();
+        },
+      },
+      {
+        id: 'contact',
+        title: 'Contact & WhatsApp',
+        subtitle: 'Send direct message or email',
+        icon: <ContactMailIcon size={30} />,
+        action: () => {
+          onOpenWindow('contact');
           onCloseMenu();
         },
       },
@@ -115,7 +182,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
         id: 'personalize',
         title: 'Personalization',
         subtitle: 'Aero Glass colors & wallpaper',
-        icon: <PersonalizeIcon size={32} />,
+        icon: <PersonalizeIcon size={30} />,
         action: () => {
           onOpenWindow('personalize');
           onCloseMenu();
@@ -129,7 +196,9 @@ export const StartMenu: React.FC<StartMenuProps> = ({
     const q = search.trim().toLowerCase();
     if (!q) return null;
     const progs = pinnedPrograms.filter(
-      (p) => p.title.toLowerCase().includes(q) || p.subtitle.toLowerCase().includes(q)
+      (p) =>
+        p.title.toLowerCase().includes(q) ||
+        p.subtitle.toLowerCase().includes(q)
     );
     const projs = projects.filter(
       (p) =>
@@ -138,16 +207,23 @@ export const StartMenu: React.FC<StartMenuProps> = ({
         p.tech.some((t) => t.toLowerCase().includes(q))
     );
     const exps = experiences.filter(
-      (e) => e.title.toLowerCase().includes(q) || e.company.toLowerCase().includes(q)
+      (e) =>
+        e.title.toLowerCase().includes(q) ||
+        e.company.toLowerCase().includes(q)
     );
     const certs = certificationGroups.flatMap((g) =>
-      g.certifications.filter((c) => c.name.toLowerCase().includes(q) || c.issuer.toLowerCase().includes(q))
+      g.certifications.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.issuer.toLowerCase().includes(q)
+      )
     );
     return { progs, projs, exps, certs };
   }, [search, pinnedPrograms]);
 
   return (
     <div
+      ref={menuRef}
       className="w7-start-menu"
       role="dialog"
       aria-label="Start Menu"
@@ -162,7 +238,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
               {searchResults.progs.length > 0 && (
                 <div>
                   <div className="font-semibold text-[#003399] px-1.5 py-0.5 border-b border-[#e2e8f0]">
-                    Programs ({searchResults.progs.length})
+                    Programs &amp; Games ({searchResults.progs.length})
                   </div>
                   {searchResults.progs.map((p) => (
                     <button
@@ -176,8 +252,12 @@ export const StartMenu: React.FC<StartMenuProps> = ({
                     >
                       {p.icon}
                       <div className="min-w-0">
-                        <div className="font-semibold text-[#111] truncate">{p.title}</div>
-                        <div className="text-[10.5px] text-[#666] truncate">{p.subtitle}</div>
+                        <div className="font-semibold text-[#111] truncate">
+                          {p.title}
+                        </div>
+                        <div className="text-[10.5px] text-[#666] truncate">
+                          {p.subtitle}
+                        </div>
                       </div>
                     </button>
                   ))}
@@ -202,8 +282,12 @@ export const StartMenu: React.FC<StartMenuProps> = ({
                     >
                       <ProjectAppIcon size={22} />
                       <div className="min-w-0">
-                        <div className="font-medium text-[#111] truncate">{pr.name}</div>
-                        <div className="text-[10.5px] text-[#666] truncate">{pr.tech.join(', ')}</div>
+                        <div className="font-medium text-[#111] truncate">
+                          {pr.name}
+                        </div>
+                        <div className="text-[10.5px] text-[#666] truncate">
+                          {pr.tech.join(', ')}
+                        </div>
                       </div>
                     </button>
                   ))}
@@ -228,8 +312,12 @@ export const StartMenu: React.FC<StartMenuProps> = ({
                     >
                       <BriefcaseIcon size={20} />
                       <div className="min-w-0">
-                        <div className="font-medium text-[#111] truncate">{ex.title}</div>
-                        <div className="text-[10.5px] text-[#666] truncate">{ex.company}</div>
+                        <div className="font-medium text-[#111] truncate">
+                          {ex.title}
+                        </div>
+                        <div className="text-[10.5px] text-[#666] truncate">
+                          {ex.company}
+                        </div>
                       </div>
                     </button>
                   ))}
@@ -251,8 +339,12 @@ export const StartMenu: React.FC<StartMenuProps> = ({
                     >
                       <CertificateIcon size={20} />
                       <div className="min-w-0">
-                        <div className="font-medium text-[#0066cc] truncate">{ct.name}</div>
-                        <div className="text-[10px] text-[#666] truncate">{ct.issuer}</div>
+                        <div className="font-medium text-[#0066cc] truncate">
+                          {ct.name}
+                        </div>
+                        <div className="text-[10px] text-[#666] truncate">
+                          {ct.issuer}
+                        </div>
                       </div>
                     </a>
                   ))}
@@ -272,6 +364,57 @@ export const StartMenu: React.FC<StartMenuProps> = ({
             /* All Programs Tree View */
             <div className="space-y-1.5 p-1 text-[11.5px]">
               <div className="font-semibold text-[#003399] px-1.5 py-0.5 border-b border-[#e2e8f0]">
+                Accessories
+              </div>
+              {[
+                { id: 'notepad', label: 'Notepad', icon: <NotepadIcon size={18} /> },
+                { id: 'calculator', label: 'Calculator', icon: <CalculatorIcon size={18} /> },
+                { id: 'paint', label: 'Paint', icon: <PaintIcon size={18} /> },
+                { id: 'cmd', label: 'Command Prompt', icon: <CmdIcon size={18} /> },
+              ].map((acc) => (
+                <button
+                  key={acc.id}
+                  type="button"
+                  onClick={() => {
+                    aeroSound.playClick();
+                    onOpenWindow(acc.id);
+                    onCloseMenu();
+                  }}
+                  className="w-full w7-item-box flex items-center gap-2 px-2 py-1 text-left"
+                >
+                  {acc.icon}
+                  <span className="truncate font-medium text-[#111]">
+                    {acc.label}
+                  </span>
+                </button>
+              ))}
+
+              <div className="font-semibold text-[#003399] px-1.5 py-0.5 border-b border-[#e2e8f0] pt-1">
+                Games
+              </div>
+              {[
+                { id: 'minesweeper', label: 'Minesweeper', icon: <MinesweeperIcon size={18} /> },
+                { id: 'solitaire', label: 'Solitaire', icon: <SolitaireIcon size={18} /> },
+                { id: 'hearts', label: 'Hearts', icon: <HeartsIcon size={18} /> },
+              ].map((gm) => (
+                <button
+                  key={gm.id}
+                  type="button"
+                  onClick={() => {
+                    aeroSound.playClick();
+                    onOpenWindow(gm.id);
+                    onCloseMenu();
+                  }}
+                  className="w-full w7-item-box flex items-center gap-2 px-2 py-1 text-left"
+                >
+                  {gm.icon}
+                  <span className="truncate font-medium text-[#111]">
+                    {gm.label}
+                  </span>
+                </button>
+              ))}
+
+              <div className="font-semibold text-[#003399] px-1.5 py-0.5 border-b border-[#e2e8f0] pt-1">
                 Featured Projects (6)
               </div>
               {projects.map((p) => (
@@ -292,8 +435,12 @@ export const StartMenu: React.FC<StartMenuProps> = ({
                   className="w-full w7-item-box flex items-center gap-2 px-2 py-1 text-left"
                 >
                   <ProjectAppIcon size={18} />
-                  <span className="truncate font-medium text-[#111]">{p.name}</span>
-                  <span className="ml-auto text-[10px] text-[#666]">{p.type}</span>
+                  <span className="truncate font-medium text-[#111]">
+                    {p.name}
+                  </span>
+                  <span className="ml-auto text-[10px] text-[#666]">
+                    {p.type}
+                  </span>
                 </button>
               ))}
 
@@ -312,7 +459,9 @@ export const StartMenu: React.FC<StartMenuProps> = ({
                   className="w-full w7-item-box flex items-center gap-2 px-2 py-1 text-left"
                 >
                   <BriefcaseIcon size={18} />
-                  <span className="truncate text-[#111]">{e.title} ({e.company})</span>
+                  <span className="truncate text-[#111]">
+                    {e.title} ({e.company})
+                  </span>
                 </button>
               ))}
 
@@ -382,7 +531,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search programs and portfolio"
+              placeholder="Search programs and files"
               aria-label="Search Start Menu"
               className="w7-search-input w-full"
             />
@@ -407,13 +556,17 @@ export const StartMenu: React.FC<StartMenuProps> = ({
         {/* Protruding User Portrait Picture Frame */}
         <div className="w7-start-avatar-frame">
           <div className="w-full h-full rounded-[3px] overflow-hidden border border-black/60 bg-[#0f2942]">
-            <Image
-              src="/personal.jpg"
-              alt={siteConfig.name}
-              width={54}
-              height={54}
-              className="w-full h-full object-cover"
-            />
+            {userProfile.useVectorAvatar ? (
+              <UserAvatarSvg size={54} />
+            ) : (
+              <Image
+                src={userProfile.avatarUrl}
+                alt={userProfile.name}
+                width={54}
+                height={54}
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
         </div>
 
@@ -427,19 +580,31 @@ export const StartMenu: React.FC<StartMenuProps> = ({
             }}
             className="w7-start-right-item font-semibold"
           >
-            <span>{siteConfig.name}</span>
+            <span>{userProfile.name}</span>
           </button>
 
           <button
             type="button"
             onClick={() => {
               aeroSound.playClick();
-              onOpenWindow('notepad');
+              onOpenExplorerSection('documents');
               onCloseMenu();
             }}
             className="w7-start-right-item"
           >
-            <span>Documents (CV)</span>
+            <span>Documents</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              aeroSound.playClick();
+              onOpenExplorerSection('pictures');
+              onCloseMenu();
+            }}
+            className="w7-start-right-item"
+          >
+            <span>Pictures</span>
           </button>
 
           <button
@@ -458,12 +623,12 @@ export const StartMenu: React.FC<StartMenuProps> = ({
             type="button"
             onClick={() => {
               aeroSound.playClick();
-              onOpenExplorerSection('experience');
+              onOpenWindow('minesweeper');
               onCloseMenu();
             }}
             className="w7-start-right-item"
           >
-            <span>Experience (4)</span>
+            <span>Games</span>
           </button>
 
           <div className="my-1.5 h-[2px] bg-gradient-to-r from-transparent via-white/25 to-transparent" />
@@ -472,36 +637,29 @@ export const StartMenu: React.FC<StartMenuProps> = ({
             type="button"
             onClick={() => {
               aeroSound.playClick();
-              onOpenExplorerSection('skills');
+              onOpenExplorerSection('computer');
               onCloseMenu();
             }}
             className="w7-start-right-item"
           >
-            <span>Skills &amp; Education</span>
+            <span>Computer</span>
           </button>
 
           <button
             type="button"
             onClick={() => {
               aeroSound.playClick();
-              onOpenExplorerSection('certifications');
+              onOpenExplorerSection('recycle');
               onCloseMenu();
             }}
-            className="w7-start-right-item"
+            className="w7-start-right-item flex items-center justify-between"
           >
-            <span>Certifications (15)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              aeroSound.playClick();
-              onOpenExplorerSection('mentorship');
-              onCloseMenu();
-            }}
-            className="w7-start-right-item"
-          >
-            <span>Mentorship</span>
+            <span>Recycle Bin</span>
+            {recycleCount > 0 && (
+              <span className="text-[10px] px-1.5 rounded bg-white/15 text-sky-200">
+                {recycleCount}
+              </span>
+            )}
           </button>
 
           <div className="my-1.5 h-[2px] bg-gradient-to-r from-transparent via-white/25 to-transparent" />
@@ -515,7 +673,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
             }}
             className="w7-start-right-item"
           >
-            <span>System Properties</span>
+            <span>Control Panel</span>
           </button>
 
           <button
@@ -538,33 +696,24 @@ export const StartMenu: React.FC<StartMenuProps> = ({
           >
             <span>GitHub ↗</span>
           </a>
-
-          <a
-            href={siteConfig.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w7-start-right-item hover:no-underline"
-          >
-            <span>LinkedIn ↗</span>
-          </a>
         </div>
 
-        {/* Bottom-Right Action Split Button */}
+        {/* Bottom-Right Windows 7 Shut Down Split Button */}
         <div className="relative pt-2 flex items-center">
           <button
             type="button"
             onClick={() => {
               aeroSound.playClick();
-              onOpenWindow('contact');
               onCloseMenu();
+              lockOrLogOff();
             }}
             className="flex-1 h-[24px] px-2.5 text-[11.5px] text-white font-medium rounded-l-[3px] border border-black/70 bg-gradient-to-b from-white/35 via-white/15 to-black/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] hover:brightness-125 cursor-pointer text-left truncate"
           >
-            Contact Me
+            Shut down
           </button>
           <button
             type="button"
-            aria-label="More actions"
+            aria-label="Power and session options"
             onClick={() => {
               aeroSound.playClick();
               setShowShutMenu(!showShutMenu);
@@ -575,7 +724,63 @@ export const StartMenu: React.FC<StartMenuProps> = ({
           </button>
 
           {showShutMenu && (
-            <div className="w7-context-menu !absolute !bottom-8 !right-0 !left-auto min-w-[170px]">
+            <div
+              ref={shutMenuRef}
+              style={{ transformOrigin: 'bottom right' }}
+              className="w7-context-menu !absolute !bottom-8 !right-0 !left-auto min-w-[185px]"
+            >
+              <button
+                type="button"
+                className="w7-menu-item"
+                onClick={() => {
+                  onCloseMenu();
+                  lockOrLogOff();
+                }}
+              >
+                <span>Switch user</span>
+              </button>
+              <button
+                type="button"
+                className="w7-menu-item"
+                onClick={() => {
+                  onCloseMenu();
+                  lockOrLogOff();
+                }}
+              >
+                <span>Log off</span>
+              </button>
+              <button
+                type="button"
+                className="w7-menu-item"
+                onClick={() => {
+                  onCloseMenu();
+                  lockOrLogOff();
+                }}
+              >
+                <span>Lock</span>
+              </button>
+              <div className="w7-menu-sep" />
+              <button
+                type="button"
+                className="w7-menu-item font-semibold text-[#003399]"
+                onClick={() => {
+                  onCloseMenu();
+                  restartSystem();
+                }}
+              >
+                <span>Restart (Boot Sequence)</span>
+              </button>
+              <button
+                type="button"
+                className="w7-menu-item"
+                onClick={() => {
+                  onCloseMenu();
+                  sleepSystem();
+                }}
+              >
+                <span>Sleep</span>
+              </button>
+              <div className="w7-menu-sep" />
               <button
                 type="button"
                 className="w7-menu-item"
@@ -584,15 +789,8 @@ export const StartMenu: React.FC<StartMenuProps> = ({
                   onCloseMenu();
                 }}
               >
-                <span>Send WhatsApp</span>
+                <span>Contact Mohamed...</span>
               </button>
-              <a
-                href={`mailto:${siteConfig.contact.email}`}
-                className="w7-menu-item hover:no-underline"
-              >
-                <span>Email Directly</span>
-              </a>
-              <div className="w7-menu-sep" />
               <button
                 type="button"
                 className="w7-menu-item"

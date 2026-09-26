@@ -17,7 +17,7 @@ const Navigation = () => {
 
   return (
     <nav
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 inset-x-0 z-50 transition-[background-color,border-color,box-shadow] duration-200 ${
         scrolled ? 'bg-paper/90 backdrop-blur-md border-b border-rule shadow-sm' : ''
       }`}
       aria-label="Primary"

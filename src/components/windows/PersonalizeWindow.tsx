@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { PersonalizeIcon } from '../AeroIcons';
+import { PersonalizeIcon, UserAvatarSvg } from '../AeroIcons';
 import { aeroSound } from '../AeroSound';
+import { useOS } from '@/state/os-store';
 
 export type WallpaperPreset = 'harmony' | 'aurora' | 'security' | 'bliss';
 
@@ -45,6 +46,8 @@ export const PersonalizeWindow: React.FC<PersonalizeWindowProps> = ({
   showGadgets,
   onToggleGadgets,
 }) => {
+  const { userProfile, updateUserProfile, lockOrLogOff, restartSystem } = useOS();
+
   const wallpapers: { id: WallpaperPreset; name: string; desc: string; previewClass: string }[] = [
     {
       id: 'harmony',
@@ -90,8 +93,11 @@ export const PersonalizeWindow: React.FC<PersonalizeWindowProps> = ({
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto w7-scroll p-4 sm:p-5 space-y-5">
         <div>
-          <h1 className="text-[18px] text-[#003399] font-normal" style={{ fontFamily: 'Calibri, "Segoe UI", sans-serif' }}>
-            Change the visuals and Aero glass effects on your desktop
+          <h1
+            className="text-[18px] text-[#003399] font-normal"
+            style={{ fontFamily: 'Calibri, "Segoe UI", sans-serif' }}
+          >
+            Change the visuals, user account tile, and Aero glass effects
           </h1>
           <p className="text-[12px] text-[#444] mt-0.5">
             Click a desktop theme or window glass color swatch to immediately customize the workspace.
@@ -116,7 +122,9 @@ export const PersonalizeWindow: React.FC<PersonalizeWindowProps> = ({
                     selected ? 'selected' : ''
                   }`}
                 >
-                  <div className={`w-full h-14 rounded border border-[#64748b] shadow-inner relative overflow-hidden ${wp.previewClass}`}>
+                  <div
+                    className={`w-full h-14 rounded border border-[#64748b] shadow-inner relative overflow-hidden ${wp.previewClass}`}
+                  >
                     <div
                       className="absolute bottom-1.5 right-1.5 w-10 h-6 rounded-[2px] border border-white/70 shadow"
                       style={{ backgroundColor: `rgba(${glassColor.rgb}, 0.65)` }}
@@ -146,7 +154,7 @@ export const PersonalizeWindow: React.FC<PersonalizeWindowProps> = ({
                       aeroSound.playClick();
                       onGlassColorChange(c);
                     }}
-                    className={`group flex flex-col items-center gap-1 p-1.5 rounded border cursor-pointer transition-all ${
+                    className={`group flex flex-col items-center gap-1 p-1.5 rounded border cursor-pointer ${
                       isSelected
                         ? 'border-[#0066cc] bg-[#e6f2ff] shadow-sm'
                         : 'border-transparent hover:border-[#9abbe0] hover:bg-[#f4f9ff]'
@@ -186,7 +194,64 @@ export const PersonalizeWindow: React.FC<PersonalizeWindowProps> = ({
           </div>
         </fieldset>
 
-        {/* 3. Desktop Gadgets Toggle */}
+        {/* 3. User Account Picture & Session Controls */}
+        <fieldset className="w7-groupbox">
+          <legend className="font-semibold text-[12.5px]">User Account Picture &amp; Windows 7 Session</legend>
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded border border-slate-400 overflow-hidden shrink-0 bg-[#0f2942] flex items-center justify-center">
+                <UserAvatarSvg size={44} />
+              </div>
+              <div>
+                <div className="font-semibold text-[12px] text-[#111]">
+                  Account Avatar Mode:{' '}
+                  <span className="text-[#0066cc]">
+                    {userProfile.useVectorAvatar ? 'Vector SVG Avatar' : 'Portrait Photo'}
+                  </span>
+                </div>
+                <div className="text-[11px] text-[#555]">
+                  Switch between Mohamed&apos;s portrait photo and the pure vector SVG Aero avatar.
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  aeroSound.playClick();
+                  updateUserProfile({
+                    useVectorAvatar: !userProfile.useVectorAvatar,
+                  });
+                }}
+                className="w7-btn"
+              >
+                {userProfile.useVectorAvatar ? 'Use Portrait Photo' : 'Use Pure SVG Avatar'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  aeroSound.playClick();
+                  lockOrLogOff();
+                }}
+                className="w7-btn"
+              >
+                Lock / Login Screen
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  aeroSound.playClick();
+                  restartSystem();
+                }}
+                className="w7-btn"
+              >
+                Replay Boot Sequence
+              </button>
+            </div>
+          </div>
+        </fieldset>
+
+        {/* 4. Desktop Gadgets Toggle */}
         <div className="flex items-center justify-between p-3 rounded border border-[#d0d7de] bg-[#f8fafc]">
           <div>
             <div className="font-semibold text-[12.5px] text-[#111]">Desktop Gadgets</div>

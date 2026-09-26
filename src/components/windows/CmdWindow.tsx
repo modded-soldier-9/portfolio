@@ -65,9 +65,50 @@ export const CmdWindow: React.FC<{ onOpenWindow: (id: string) => void }> = ({ on
           '  contact      Show direct email, phone, WhatsApp & open mailer',
           '  systeminfo   Display system architecture specifications',
           '  dir          List directory contents of C:\\Users\\Mohamed.Elsheikh',
+          '  calc         Launch Windows 7 Aero Calculator',
+          '  mspaint      Launch Windows 7 MS Paint',
+          '  notepad      Launch Windows 7 Notepad (Resume.txt)',
+          '  minesweeper  Launch Windows 7 Minesweeper',
+          '  solitaire    Launch Windows 7 Klondike Solitaire',
+          '  hearts       Launch Windows 7 Hearts card game',
           '  color 0a     Switch terminal to matrix green (or color 07 for default)',
           '  cls          Clear the command prompt screen',
         ].join('\n');
+        break;
+
+      case 'calc':
+      case 'calculator':
+        response = 'Launching C:\\Windows\\System32\\calc.exe...';
+        onOpenWindow('calculator');
+        break;
+
+      case 'mspaint':
+      case 'paint':
+        response = 'Launching C:\\Windows\\System32\\mspaint.exe...';
+        onOpenWindow('paint');
+        break;
+
+      case 'notepad':
+        response = 'Launching C:\\Windows\\System32\\notepad.exe...';
+        onOpenWindow('notepad');
+        break;
+
+      case 'minesweeper':
+      case 'winmine':
+        response = 'Launching Windows 7 Minesweeper...';
+        onOpenWindow('minesweeper');
+        break;
+
+      case 'solitaire':
+      case 'sol':
+        response = 'Launching Windows 7 Klondike Solitaire...';
+        onOpenWindow('solitaire');
+        break;
+
+      case 'hearts':
+      case 'mshearts':
+        response = 'Launching Windows 7 Hearts...';
+        onOpenWindow('hearts');
         break;
 
       case 'whoami':

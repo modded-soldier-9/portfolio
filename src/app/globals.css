@@ -133,7 +133,7 @@ html, body {
     0 12px 34px rgba(0, 0, 0, 0.62),
     0 3px 10px rgba(0, 0, 0, 0.4),
     inset 0 0 0 1px rgba(255, 255, 255, 0.62);
-  transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  transition: box-shadow 0.18s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .w7-window.inactive {
@@ -302,7 +302,8 @@ html, body {
 
 /* ─── Standard Aero Buttons & Controls ──────────────────────────────────── */
 
-.w7-btn {
+.w7-btn,
+.win7-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -319,10 +320,14 @@ html, body {
   position: relative;
   white-space: nowrap;
   text-decoration: none;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    border-color 0.16s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.16s cubic-bezier(0.23, 1, 0.32, 1),
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.w7-btn:hover:not(:disabled) {
+.w7-btn:hover:not(:disabled),
+.win7-btn:hover:not(:disabled) {
   background: var(--w7-el-grad-h);
   border-color: var(--w7-el-bd-h);
   color: #111;
@@ -330,13 +335,17 @@ html, body {
 }
 
 .w7-btn:active:not(:disabled),
-.w7-btn.active {
+.w7-btn.active,
+.win7-btn:active:not(:disabled),
+.win7-btn.active {
   background: var(--w7-el-grad-a);
   border-color: var(--w7-el-bd-a);
   box-shadow: var(--w7-el-sd-a);
+  transform: scale(0.97);
 }
 
-.w7-btn.default {
+.w7-btn.default,
+.win7-btn.default {
   border-color: #3c7fb1;
   background: var(--w7-el-grad-h);
   animation: w7-pulse 1.2s ease-in-out infinite alternate;
@@ -835,12 +844,6 @@ html, body {
   display: grid;
   grid-template-columns: 248px 1fr;
   gap: 6px;
-  animation: w7-start-open 0.14s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes w7-start-open {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .w7-start-left {
@@ -989,5 +992,14 @@ html, body {
   .w7-taskbar-btn {
     width: 34px;
     margin: 2px 0.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

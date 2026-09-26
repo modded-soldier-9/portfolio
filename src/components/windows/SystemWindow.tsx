@@ -6,7 +6,17 @@ import { siteConfig } from '@/config/site';
 import { ComputerIcon, SecurityShieldIcon, ExplorerIcon, ContactMailIcon, CmdIcon, PersonalizeIcon, NotepadIcon } from '../AeroIcons';
 import { aeroSound } from '../AeroSound';
 
-export type ExplorerSection = 'overview' | 'projects' | 'experience' | 'skills' | 'certifications' | 'mentorship';
+export type ExplorerSection =
+  | 'overview'
+  | 'projects'
+  | 'experience'
+  | 'skills'
+  | 'certifications'
+  | 'mentorship'
+  | 'documents'
+  | 'pictures'
+  | 'computer'
+  | 'recycle';
 
 interface SystemWindowProps {
   onOpenExplorerSection: (section: ExplorerSection) => void;
