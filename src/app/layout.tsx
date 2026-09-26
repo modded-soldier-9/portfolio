@@ -1,22 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, EB_Garamond } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
-import { ThemeProvider } from "@/contexts/ThemeContext";
 import StructuredData from "@/components/StructuredData";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
-const display = EB_Garamond({ subsets: ["latin"], variable: "--font-display", display: "swap", weight: ["400", "500", "600", "700"] });
 
 const siteUrl = "https://mohamedelsheikh.dev";
 
 export const viewport: Viewport = {
-  colorScheme: "light dark",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f5f2ec" },
-    { media: "(prefers-color-scheme: dark)", color: "#1a1612" },
-  ],
+  colorScheme: "light",
+  themeColor: "#1e81d6",
 };
 
 export const metadata: Metadata = {
@@ -30,26 +21,24 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mohamed Elsheikh — Security Researcher",
     description: "Independent security researcher. Vulnerability research, secure web development, mentorship.",
-    url: siteUrl, siteName: "Mohamed Elsheikh",
+    url: siteUrl,
+    siteName: "Mohamed Elsheikh",
     images: [{ url: "/personal.jpg", width: 800, height: 800, alt: "Mohamed Elsheikh" }],
-    locale: "en_US", type: "website",
+    locale: "en_US",
+    type: "website",
   },
   twitter: { card: "summary_large_image", title: "Mohamed Elsheikh", images: ["/personal.jpg"] },
   robots: { index: true, follow: true },
 };
 
-const themeScript = `(function(){try{var t=localStorage.getItem('theme')||'system';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.classList.remove('dark','light');document.documentElement.classList.add(d?'dark':'light')}catch(e){}})()`;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${mono.variable} ${display.variable} light`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <StructuredData />
       </head>
       <body>
-        <a href="#main" className="skip-link">Skip to content</a>
-        <ThemeProvider>{children}</ThemeProvider>
+        {children}
         <Analytics />
       </body>
     </html>
