@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { siteConfig } from '@/config/site';
+import { buildDefaultResumeText } from '@/state/os-store';
 import { ComputerIcon, SecurityShieldIcon, ExplorerIcon, ContactMailIcon, CmdIcon, PersonalizeIcon, NotepadIcon } from '../AeroIcons';
 import { aeroSound } from '../AeroSound';
 
@@ -28,6 +29,20 @@ export const SystemWindow: React.FC<SystemWindowProps> = ({
   onOpenWindow,
 }) => {
   const [showWeiDetails, setShowWeiDetails] = useState(false);
+
+  const handleDownloadResume = () => {
+    aeroSound.playClick();
+    const text = buildDefaultResumeText();
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Resume_${siteConfig.name.replace(/\s+/g, '_')}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="flex flex-col h-full bg-white select-none">
@@ -246,6 +261,54 @@ export const SystemWindow: React.FC<SystemWindowProps> = ({
               <span className="text-[11px] text-[#5a6b7c] hidden sm:inline">
                 {siteConfig.location}
               </span>
+            </div>
+
+            {/* Executive Direct-Action Command Bar */}
+            <div className="bg-gradient-to-r from-[#205493] via-[#1a4478] to-[#112e51] text-white p-3 rounded shadow-sm border border-[#163863] flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-white text-[13px] shadow-inner shrink-0">
+                  ME
+                </div>
+                <div>
+                  <div className="text-[13px] font-semibold text-white tracking-wide">
+                    Executive Recruiter Quick Actions
+                  </div>
+                  <div className="text-[11px] text-[#cfe2ff]">
+                    Available for Senior Cybersecurity &amp; Full-Stack Architecture roles
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleDownloadResume}
+                  className="px-3 py-1.5 rounded bg-gradient-to-b from-[#ffffff] to-[#d8e6f6] hover:from-[#f0f6ff] hover:to-[#c8dbf0] text-[#003399] font-semibold text-[11.5px] border border-[#7ba0cd] shadow hover:shadow-md flex items-center gap-1.5 active:translate-y-0.5"
+                >
+                  <NotepadIcon size={14} />
+                  <span>Download Resume (.txt)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    aeroSound.playClick();
+                    window.open('https://wa.me/201021464357', '_blank');
+                  }}
+                  className="px-3 py-1.5 rounded bg-gradient-to-b from-[#22c55e] to-[#16a34a] hover:from-[#34d399] hover:to-[#15803d] text-white font-semibold text-[11.5px] border border-[#166534] shadow hover:shadow-md flex items-center gap-1.5 active:translate-y-0.5"
+                >
+                  <span>💬 WhatsApp Chat</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    aeroSound.playClick();
+                    onOpenWindow('security');
+                  }}
+                  className="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white font-medium text-[11.5px] border border-white/30 shadow-sm flex items-center gap-1.5"
+                >
+                  <SecurityShieldIcon size={14} />
+                  <span>15+ Certifications</span>
+                </button>
+              </div>
             </div>
 
             {/* Section 1: Edition / Identity */}

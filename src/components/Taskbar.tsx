@@ -16,6 +16,7 @@ import {
   MinesweeperIcon,
   SolitaireIcon,
   HeartsIcon,
+  SpaceCadetIcon,
 } from './AeroIcons';
 import { aeroSound } from './AeroSound';
 import { animateFlyoutOpen } from '@/core/animation';
@@ -524,5 +525,6 @@ export const TASKBAR_ICONS = {
   minesweeper: <MinesweeperIcon size={28} />,
   solitaire: <SolitaireIcon size={28} />,
   hearts: <HeartsIcon size={28} />,
+  'space-cadet': <SpaceCadetIcon size={28} />,
   personalize: <PersonalizeIcon size={28} />,
 };

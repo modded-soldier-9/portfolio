@@ -212,7 +212,7 @@ export const INITIAL_MANAGED_WINDOWS: ManagedWindowState[] = [
     title: `${siteConfig.name} — Windows Explorer`,
     shortLabel: 'File Explorer',
     glowColor: 'rgba(250, 204, 21, 0.62)',
-    isOpen: true,
+    isOpen: false,
     isMinimized: false,
     zIndex: 20,
     snap: 'none',
@@ -228,7 +228,19 @@ export const INITIAL_MANAGED_WINDOWS: ManagedWindowState[] = [
     isMinimized: false,
     zIndex: 30,
     snap: 'none',
-    defaultPos: { x: 262, y: 42, width: 790, height: 535 },
+    defaultPos: { x: 260, y: 35, width: 840, height: 570 },
+    pinned: true,
+  },
+  {
+    id: 'space-cadet',
+    title: '3D Pinball for Windows - Space Cadet',
+    shortLabel: 'Space Cadet',
+    glowColor: 'rgba(168, 85, 247, 0.65)',
+    isOpen: false,
+    isMinimized: false,
+    zIndex: 25,
+    snap: 'none',
+    defaultPos: { x: 260, y: 30, width: 620, height: 620 },
     pinned: true,
   },
   {
@@ -409,7 +421,17 @@ interface OSContextValue {
 const OSContext = createContext<OSContextValue | null>(null);
 
 export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [sessionPhase, setSessionPhase] = useState<SessionPhase>('booting');
+  const [sessionPhase, setSessionPhase] = useState<SessionPhase>('desktop');
+
+  // Check URL query parameters on mount (?boot=1 restarts the boot and logon experience)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('boot') === '1') {
+        setSessionPhase('booting');
+      }
+    }
+  }, []);
   const [userProfile, setUserProfile] = useState<UserProfile>({
     name: siteConfig.name,
     role: siteConfig.role,

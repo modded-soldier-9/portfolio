@@ -23,6 +23,7 @@ import {
   MinesweeperIcon,
   SolitaireIcon,
   HeartsIcon,
+  SpaceCadetIcon,
   UserAvatarSvg,
 } from './AeroIcons';
 import { aeroSound } from './AeroSound';
@@ -145,6 +146,16 @@ export const StartMenu: React.FC<StartMenuProps> = ({
         icon: <HeartsIcon size={30} />,
         action: () => {
           onOpenWindow('hearts');
+          onCloseMenu();
+        },
+      },
+      {
+        id: 'space-cadet',
+        title: '3D Pinball Space Cadet',
+        subtitle: 'Arcade flipper table & bumpers',
+        icon: <SpaceCadetIcon size={30} />,
+        action: () => {
+          onOpenWindow('space-cadet');
           onCloseMenu();
         },
       },
@@ -393,6 +404,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
                 Games
               </div>
               {[
+                { id: 'space-cadet', label: '3D Pinball Space Cadet', icon: <SpaceCadetIcon size={18} /> },
                 { id: 'minesweeper', label: 'Minesweeper', icon: <MinesweeperIcon size={18} /> },
                 { id: 'solitaire', label: 'Solitaire', icon: <SolitaireIcon size={18} /> },
                 { id: 'hearts', label: 'Hearts', icon: <HeartsIcon size={18} /> },

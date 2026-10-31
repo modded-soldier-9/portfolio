@@ -17,6 +17,7 @@ import {
   MinesweeperIcon,
   SolitaireIcon,
   HeartsIcon,
+  SpaceCadetIcon,
   RecycleBinIcon,
 } from '@/core/assets';
 import { AeroWindow } from '@/core/window-manager';
@@ -33,7 +34,7 @@ import {
 import { aeroSound } from '@/components/AeroSound';
 import { useOS, type ExplorerSection } from '@/state/os-store';
 
-export const DesktopShell: React.FC = () => {
+export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' }) => {
   const {
     sessionPhase,
     completeBoot,
@@ -269,6 +270,12 @@ export const DesktopShell: React.FC = () => {
       onLaunch: () => handleOpenWindow('hearts'),
     },
     {
+      id: 'space-cadet',
+      label: 'Space Cadet Pinball',
+      icon: <SpaceCadetIcon size={42} />,
+      onLaunch: () => handleOpenWindow('space-cadet'),
+    },
+    {
       id: 'cmd',
       label: 'Command Prompt',
       icon: <CmdIcon size={42} />,
@@ -401,7 +408,7 @@ export const DesktopShell: React.FC = () => {
         }}
         className={`relative w-screen h-screen overflow-hidden select-none ${
           aeroPeek ? 'aero-peek-active' : ''
-        }`}
+        } ${className}`}
       >
         {/* 1. Authentic Harmony Wallpaper + Atmospheric Glass Ribbons */}
         <div

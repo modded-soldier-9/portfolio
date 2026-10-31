@@ -609,6 +609,63 @@ export const HeartsIcon: React.FC<IconProps> = ({ className = '', size = 32 }) =
 };
 
 /**
+ * 3D Space Cadet Pinball Icon (Retro Space Pinball Cabinet & Chrome Ball)
+ */
+export const SpaceCadetIcon: React.FC<IconProps> = ({ className = '', size = 32 }) => {
+  const uid = useId().replace(/:/g, '');
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" className={className} aria-hidden="true">
+      <defs>
+        <radialGradient id={`cadetSpace-${uid}`} cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stopColor="#3b0764" />
+          <stop offset="50%" stopColor="#1e1b4b" />
+          <stop offset="100%" stopColor="#090514" />
+        </radialGradient>
+        <radialGradient id={`ballGleam-${uid}`} cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="40%" stopColor="#e2e8f0" />
+          <stop offset="70%" stopColor="#94a3b8" />
+          <stop offset="100%" stopColor="#475569" />
+        </radialGradient>
+        <linearGradient id={`cabinetBorder-${uid}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#9333ea" />
+          <stop offset="50%" stopColor="#3b82f6" />
+          <stop offset="100%" stopColor="#10b981" />
+        </linearGradient>
+      </defs>
+
+      {/* Pinball Table Trapeze Outer Body */}
+      <polygon
+        points="9,4 39,4 43,44 5,44"
+        fill={`url(#cadetSpace-${uid})`}
+        stroke={`url(#cabinetBorder-${uid})`}
+        strokeWidth="1.8"
+      />
+
+      {/* Retro Hyperspace Grid & Starfields */}
+      <circle cx="16" cy="12" r="0.8" fill="#ffffff" />
+      <circle cx="32" cy="10" r="0.8" fill="#38bdf8" />
+      <circle cx="24" cy="18" r="0.9" fill="#facc15" />
+      <circle cx="12" cy="28" r="0.7" fill="#ffffff" />
+      <circle cx="36" cy="30" r="0.7" fill="#ffffff" />
+
+      {/* Bumpers */}
+      <circle cx="19" cy="18" r="3.2" fill="#e11d48" stroke="#fecdd3" strokeWidth="0.8" />
+      <circle cx="29" cy="18" r="3.2" fill="#2563eb" stroke="#bfdbfe" strokeWidth="0.8" />
+      <circle cx="24" cy="24" r="3.5" fill="#f59e0b" stroke="#fef3c7" strokeWidth="0.8" />
+
+      {/* Flippers */}
+      <line x1="17" y1="38" x2="21" y2="40" stroke="#f43f5e" strokeWidth="2.4" strokeLinecap="round" />
+      <line x1="31" y1="38" x2="27" y2="40" stroke="#f43f5e" strokeWidth="2.4" strokeLinecap="round" />
+
+      {/* Steel Pinball */}
+      <circle cx="27" cy="30" r="3.8" fill={`url(#ballGleam-${uid})`} stroke="#1e293b" strokeWidth="0.6" />
+      <circle cx="25.8" cy="28.8" r="1.1" fill="#ffffff" />
+    </svg>
+  );
+};
+
+/**
  * Windows 7 Ease of Access Icon (Bottom-Left Login Screen Button)
  */
 export const EaseOfAccessIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => {

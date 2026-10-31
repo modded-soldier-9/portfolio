@@ -9,6 +9,7 @@ import { paintModule } from './paint';
 import { minesweeperModule } from '@/games/minesweeper';
 import { solitaireModule } from '@/games/solitaire';
 import { heartsModule } from '@/games/hearts';
+import { spaceCadetModule } from '@/games/space-cadet';
 import {
   ComputerIcon,
   SecurityShieldIcon,
@@ -186,6 +187,7 @@ export const APP_REGISTRY: Record<string, AppModuleContract> = {
   minesweeper: minesweeperModule,
   solitaire: solitaireModule,
   hearts: heartsModule,
+  'space-cadet': spaceCadetModule,
   personalize: personalizeModule,
 };
 
