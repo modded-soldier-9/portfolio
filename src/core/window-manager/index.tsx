@@ -9,6 +9,7 @@ import {
   animateWindowClose,
   animateWindowSnapChange,
 } from '@/core/animation';
+import { rememberFocus, restoreFocus } from '@/lib/focus-return';
 import type { SnapState, WindowPosition } from '@/state/os-store';
 
 export type { SnapState, WindowPosition };
@@ -64,6 +65,8 @@ export const AeroWindow: React.FC<AeroWindowProps> = ({
   const [pos, setPos] = useState<WindowPosition>(defaultPos);
   const [isMobile, setIsMobile] = useState(false);
   const [snapPreview, setSnapPreview] = useState<SnapState>('none');
+  const [systemMenuOpen, setSystemMenuOpen] = useState(false);
+  const [keyboardMoveMode, setKeyboardMoveMode] = useState(false);
 
   const sectionRef = useRef<HTMLElement>(null);
   const prevOpenRef = useRef<boolean>(false);
@@ -100,11 +103,17 @@ export const AeroWindow: React.FC<AeroWindowProps> = ({
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       setPos((prev) => {
-        const maxW = Math.max(300, window.innerWidth - 12);
+        // Keep clear of the desktop icon column and (on wide screens) gadgets.
+        const leftReserve = mobile ? 4 : 112;
+        const rightReserve = window.innerWidth >= 1400 ? 214 : 12;
+        const maxW = Math.max(300, window.innerWidth - leftReserve - rightReserve);
         const maxH = Math.max(260, window.innerHeight - 48);
         const w = Math.min(prev.width, maxW);
         const h = Math.min(prev.height, maxH);
-        const x = Math.max(4, Math.min(prev.x, window.innerWidth - w - 4));
+        const x = Math.max(
+          leftReserve,
+          Math.min(prev.x, window.innerWidth - w - rightReserve)
+        );
         const y = Math.max(4, Math.min(prev.y, window.innerHeight - h - 44));
         return { x, y, width: w, height: h };
       });
@@ -117,20 +126,67 @@ export const AeroWindow: React.FC<AeroWindowProps> = ({
   // Trigger GSAP open / restore animations and module lifecycle hooks
   useEffect(() => {
     if (isOpen && !prevOpenRef.current) {
+      rememberFocus();
       onMountModule?.();
       if (!isMinimized && sectionRef.current) {
         animateWindowOpen(sectionRef.current);
+        window.setTimeout(() => sectionRef.current?.focus(), 30);
       }
     } else if (!isOpen && prevOpenRef.current) {
       onUnmountModule?.();
+      setSystemMenuOpen(false);
+      setKeyboardMoveMode(false);
+      restoreFocus();
     } else if (isOpen && !isMinimized && prevMinimizedRef.current) {
       if (sectionRef.current) {
         animateWindowRestore(sectionRef.current);
+        window.setTimeout(() => sectionRef.current?.focus(), 30);
       }
     }
     prevOpenRef.current = isOpen;
     prevMinimizedRef.current = isMinimized;
   }, [isOpen, isMinimized, onMountModule, onUnmountModule]);
+
+  // Keyboard Move mode (non-drag alternative) and Esc to cancel system menu
+  useEffect(() => {
+    if (!isOpen || isMinimized || !isActive) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (systemMenuOpen || keyboardMoveMode) {
+          e.preventDefault();
+          setSystemMenuOpen(false);
+          setKeyboardMoveMode(false);
+        }
+        return;
+      }
+
+      if (keyboardMoveMode && snapState === 'none' && !isMobile) {
+        const step = e.shiftKey ? 40 : 16;
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          setPos((prev) => {
+            const leftReserve = 112;
+            const rightReserve = window.innerWidth >= 1400 ? 214 : 12;
+            let { x, y } = prev;
+            if (e.key === 'ArrowLeft') x -= step;
+            if (e.key === 'ArrowRight') x += step;
+            if (e.key === 'ArrowUp') y -= step;
+            if (e.key === 'ArrowDown') y += step;
+            x = Math.max(leftReserve, Math.min(x, window.innerWidth - prev.width - rightReserve));
+            y = Math.max(4, Math.min(y, window.innerHeight - prev.height - 44));
+            return { ...prev, x, y };
+          });
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          setKeyboardMoveMode(false);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, isMinimized, isActive, systemMenuOpen, keyboardMoveMode, snapState, isMobile]);
 
   // Trigger GSAP snap pulse when snapState changes
   useEffect(() => {
@@ -165,6 +221,8 @@ export const AeroWindow: React.FC<AeroWindowProps> = ({
       e.stopPropagation();
       if (isAnimatingOutRef.current) return;
       aeroSound.playClick();
+      setSystemMenuOpen(false);
+      setKeyboardMoveMode(false);
       isAnimatingOutRef.current = true;
       animateWindowClose(sectionRef.current, () => {
         isAnimatingOutRef.current = false;
@@ -172,6 +230,16 @@ export const AeroWindow: React.FC<AeroWindowProps> = ({
       });
     },
     [id, onClose]
+  );
+
+  const applySnap = useCallback(
+    (snap: SnapState) => {
+      aeroSound.playClick();
+      setSystemMenuOpen(false);
+      setKeyboardMoveMode(false);
+      onSnapChange(id, snap);
+    },
+    [id, onSnapChange]
   );
 
   const handlePointerDownTitle = useCallback(
@@ -402,12 +470,15 @@ export const AeroWindow: React.FC<AeroWindowProps> = ({
       <section
         ref={sectionRef}
         role="dialog"
+        tabIndex={-1}
         aria-modal={!isMinimized}
         aria-labelledby={`window-title-${id}`}
         aria-hidden={isMinimized}
         onMouseDown={handleFocus}
         style={style}
-        className={`w7-window ${isActive ? 'active' : 'inactive'} ${isMaxOrMobile ? 'maximized' : ''}`}
+        className={`w7-window ${isActive ? 'active' : 'inactive'} ${isMaxOrMobile ? 'maximized' : ''} ${
+          keyboardMoveMode ? 'outline outline-2 outline-[#3399ff] outline-offset-[-2px]' : ''
+        }`}
       >
         {/* Aero Glass Title Bar */}
         <div
@@ -422,17 +493,128 @@ export const AeroWindow: React.FC<AeroWindowProps> = ({
             onSnapChange(id, snapState === 'maximized' ? 'none' : 'maximized');
           }}
         >
-          <div className="w7-title-bar-left">
-            <div className="w-4 h-4 flex items-center justify-center shrink-0 overflow-hidden drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] [&>svg]:w-4 [&>svg]:h-4">
+          <div className="w7-title-bar-left relative">
+            <button
+              type="button"
+              className="w-4 h-4 flex items-center justify-center shrink-0 overflow-hidden drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] [&>svg]:w-4 [&>svg]:h-4 rounded-sm hover:ring-1 hover:ring-white/70"
+              aria-label="Window menu"
+              aria-haspopup="menu"
+              aria-expanded={systemMenuOpen}
+              title="Window menu (snap / move without dragging)"
+              onClick={(e) => {
+                e.stopPropagation();
+                aeroSound.playClick();
+                handleFocus();
+                setSystemMenuOpen((open) => !open);
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
               {icon}
-            </div>
+            </button>
             <span id={`window-title-${id}`} className="w7-title-bar-text">
               {title}
+              {keyboardMoveMode ? ' [Move: arrows, Enter to finish]' : ''}
             </span>
+
+            {systemMenuOpen && !isMobile && (
+              <div
+                role="menu"
+                aria-label="Window commands"
+                className="absolute left-0 top-[22px] z-[60] min-w-[168px] rounded-sm border border-[#6d8dad] bg-white shadow-[2px_4px_12px_rgba(0,0,0,0.28)] py-1 text-[11.5px]"
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="w-full px-3 py-1.5 text-left hover:bg-[#e5f3ff]"
+                  onClick={() => applySnap(snapState === 'maximized' ? 'none' : 'maximized')}
+                >
+                  {snapState === 'maximized' ? 'Restore' : 'Maximize'}
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="w-full px-3 py-1.5 text-left hover:bg-[#e5f3ff]"
+                  onClick={() => applySnap('left')}
+                >
+                  Snap Left
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="w-full px-3 py-1.5 text-left hover:bg-[#e5f3ff]"
+                  onClick={() => applySnap('right')}
+                >
+                  Snap Right
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="w-full px-3 py-1.5 text-left hover:bg-[#e5f3ff] disabled:opacity-40"
+                  disabled={snapState !== 'none'}
+                  onClick={() => {
+                    aeroSound.playClick();
+                    setSystemMenuOpen(false);
+                    setKeyboardMoveMode(true);
+                  }}
+                >
+                  Move with Arrow Keys
+                </button>
+                <div className="my-1 border-t border-[#d0d7de]" />
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="w-full px-3 py-1.5 text-left hover:bg-[#e5f3ff]"
+                  onClick={handleAnimatedMinimize}
+                >
+                  Minimize
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="w-full px-3 py-1.5 text-left hover:bg-[#fee2e2] text-[#991b1b]"
+                  onClick={handleAnimatedClose}
+                >
+                  Close
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Top-Right Attached Caption Controls Pill */}
           <div className="w7-title-bar-controls">
+            {!isMobile && (
+              <>
+                <button
+                  type="button"
+                  aria-label="Snap left"
+                  title="Snap left (also Ctrl+Alt+Left)"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    applySnap('left');
+                  }}
+                  className="w7-caption-btn is-minimize"
+                >
+                  <svg width="11" height="10" viewBox="0 0 11 10" aria-hidden="true">
+                    <rect x="1" y="1" width="4" height="8" fill="#fff" stroke="#1e293b" strokeWidth="0.8" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  aria-label="Snap right"
+                  title="Snap right (also Ctrl+Alt+Right)"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    applySnap('right');
+                  }}
+                  className="w7-caption-btn is-minimize"
+                >
+                  <svg width="11" height="10" viewBox="0 0 11 10" aria-hidden="true">
+                    <rect x="6" y="1" width="4" height="8" fill="#fff" stroke="#1e293b" strokeWidth="0.8" />
+                  </svg>
+                </button>
+              </>
+            )}
             <button
               type="button"
               aria-label="Minimize"

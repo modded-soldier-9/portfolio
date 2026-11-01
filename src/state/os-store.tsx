@@ -216,7 +216,7 @@ export const INITIAL_MANAGED_WINDOWS: ManagedWindowState[] = [
     isMinimized: false,
     zIndex: 20,
     snap: 'none',
-    defaultPos: { x: 196, y: 18, width: 885, height: 575 },
+    defaultPos: { x: 120, y: 20, width: 760, height: 540 },
     pinned: true,
   },
   {
@@ -228,7 +228,7 @@ export const INITIAL_MANAGED_WINDOWS: ManagedWindowState[] = [
     isMinimized: false,
     zIndex: 30,
     snap: 'none',
-    defaultPos: { x: 260, y: 35, width: 840, height: 570 },
+    defaultPos: { x: 120, y: 28, width: 720, height: 520 },
     pinned: true,
   },
   {

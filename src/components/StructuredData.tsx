@@ -12,7 +12,7 @@ function toJsonLd(data: unknown): string {
 
 /**
  * JSON-LD structured data for SEO.
- * Server component — no 'use client' needed since it only emits static script tags.
+ * Server component - no 'use client' needed since it only emits static script tags.
  */
 const StructuredData = () => {
   const { url } = siteConfig;

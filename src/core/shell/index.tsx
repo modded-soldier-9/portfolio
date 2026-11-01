@@ -32,6 +32,7 @@ import {
   type TaskbarAppItem,
 } from '@/components/Taskbar';
 import { aeroSound } from '@/components/AeroSound';
+import { rememberFocus, restoreFocus } from '@/lib/focus-return';
 import { useOS, type ExplorerSection } from '@/state/os-store';
 
 export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' }) => {
@@ -122,10 +123,15 @@ export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' 
       if (e.key === 'Escape' && (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey) {
         e.preventDefault();
         setContextMenu(null);
-        setStartOpen((open) => !open);
+        setStartOpen((open) => {
+          if (!open) rememberFocus();
+          else restoreFocus();
+          return !open;
+        });
         return;
       }
       if (e.key === 'Escape') {
+        if (startOpen) restoreFocus();
         setStartOpen(false);
         setContextMenu(null);
         return;
@@ -148,7 +154,7 @@ export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' 
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [activeWindowId, setWindowSnap]);
+  }, [activeWindowId, setWindowSnap, startOpen]);
 
   const handleOpenWindow = (id: string) => {
     setStartOpen(false);
@@ -245,7 +251,7 @@ export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' 
     },
     {
       id: 'projects',
-      label: 'Projects (6)',
+      label: 'Projects',
       icon: <FolderIcon size={42} badgeColor="#2563eb" />,
       onLaunch: () => handleOpenExplorerAt('projects'),
     },
@@ -730,7 +736,10 @@ export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' 
             onOpenWindow={handleOpenWindow}
             onOpenExplorerSection={handleOpenExplorerAt}
             onResetDesktop={handleResetDesktop}
-            onCloseMenu={() => setStartOpen(false)}
+            onCloseMenu={() => {
+              setStartOpen(false);
+              restoreFocus();
+            }}
           />
         )}
 
@@ -738,7 +747,13 @@ export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' 
         <Taskbar
           apps={taskbarApps}
           startOpen={startOpen}
-          onToggleStart={() => setStartOpen(!startOpen)}
+          onToggleStart={() => {
+            setStartOpen((open) => {
+              if (!open) rememberFocus();
+              else restoreFocus();
+              return !open;
+            });
+          }}
           onTaskbarAppClick={handleTaskbarAppClick}
           onCloseApp={closeWindow}
           onShowDesktopClick={handleShowDesktopClick}

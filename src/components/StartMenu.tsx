@@ -59,7 +59,75 @@ export const StartMenu: React.FC<StartMenuProps> = ({
 
   useEffect(() => {
     animateStartMenuOpen(menuRef.current);
-  }, []);
+    const root = menuRef.current;
+    if (!root) return;
+
+    const getItems = () =>
+      Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href], input:not([disabled])'
+        )
+      ).filter((el) => {
+        const style = window.getComputedStyle(el);
+        return style.visibility !== 'hidden' && style.display !== 'none';
+      });
+
+    // Mark interactive items for AT and focus the search field first when present.
+    getItems().forEach((el) => {
+      if (el.tagName === 'INPUT') return;
+      if (!el.getAttribute('role')) el.setAttribute('role', 'menuitem');
+    });
+    const preferred =
+      root.querySelector<HTMLElement>('input[type="search"], input[type="text"]') ||
+      getItems()[0];
+    preferred?.focus();
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        onCloseMenu();
+        return;
+      }
+
+      const items = getItems();
+      if (items.length === 0) return;
+      const active = document.activeElement as HTMLElement | null;
+      const idx = active ? items.indexOf(active) : -1;
+      const inTextField =
+        active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement;
+
+      if (e.key === 'ArrowDown') {
+        if (inTextField && active instanceof HTMLInputElement) {
+          e.preventDefault();
+          const next = items.find((el) => el !== active && el.tagName !== 'INPUT') || items[0];
+          next?.focus();
+          return;
+        }
+        e.preventDefault();
+        const nextIdx = idx < 0 ? 0 : (idx + 1) % items.length;
+        items[nextIdx]?.focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const nextIdx = idx <= 0 ? items.length - 1 : idx - 1;
+        items[nextIdx]?.focus();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        items[0]?.focus();
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        items[items.length - 1]?.focus();
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        if (active && active.tagName !== 'INPUT' && items.includes(active)) {
+          e.preventDefault();
+          active.click();
+        }
+      }
+    };
+
+    root.addEventListener('keydown', onKeyDown);
+    return () => root.removeEventListener('keydown', onKeyDown);
+  }, [onCloseMenu]);
 
   useEffect(() => {
     if (showShutMenu) {
@@ -239,12 +307,6 @@ export const StartMenu: React.FC<StartMenuProps> = ({
       role="menu"
       aria-label="Start Menu"
       onClick={(e) => e.stopPropagation()}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') {
-          e.stopPropagation();
-          onCloseMenu();
-        }
-      }}
     >
       {/* LEFT WHITE PANE */}
       <div className="w7-start-left">
@@ -433,7 +495,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
               ))}
 
               <div className="font-semibold text-[#003399] px-1.5 py-0.5 border-b border-[#e2e8f0] pt-1">
-                Featured Projects (6)
+                Featured Projects ({featuredProjects.length})
               </div>
               {featuredProjects.map((p) => (
                 <button

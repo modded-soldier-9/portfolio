@@ -76,7 +76,7 @@ export const PaintApp: React.FC = () => {
   const [startPt, setStartPt] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [cursorCoords, setCursorCoords] = useState<{ x: number; y: number } | null>(null);
   const [fileName, setFileName] = useState<string>('Aero_Artwork.png');
-  const [statusMsg, setStatusMsg] = useState<string>('Ready — Click and drag on canvas to draw');
+  const [statusMsg, setStatusMsg] = useState<string>('Ready - Click and drag on canvas to draw');
 
   const CANVAS_W = 720;
   const CANVAS_H = 420;
@@ -701,7 +701,7 @@ export const PaintApp: React.FC = () => {
       <div className="h-[23px] px-3 bg-[#eff4fb] border-t border-[#a8bcd4] flex items-center justify-between text-[11px] text-[#2c3e50] shrink-0">
         <div className="flex items-center gap-4">
           <span>
-            🎯 {cursorCoords ? `${cursorCoords.x}, ${cursorCoords.y}px` : '—'}
+            🎯 {cursorCoords ? `${cursorCoords.x}, ${cursorCoords.y}px` : '-'}
           </span>
           <span>
             📐 {CANVAS_W} &times; {CANVAS_H}px

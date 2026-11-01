@@ -7,7 +7,7 @@ export const siteConfig = {
   url: 'https://mohamedelsheikh.dev',
   location: 'Johannesburg, South Africa',
   disclaimer:
-    'Desktop-inspired portfolio interface. Not affiliated with Microsoft. Windows is a trademark of Microsoft Corporation.',
+    'Not affiliated with Microsoft. Windows is a trademark of Microsoft Corporation.',
 
   contact: {
     email: 'mohamedelsheikh4859@gmail.com',

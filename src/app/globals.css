@@ -1005,4 +1005,11 @@ html, body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  .w7-window,
+  .w7-start-menu,
+  .w7-desktop-icon {
+    transition: none !important;
+    animation: none !important;
+  }
 }

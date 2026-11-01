@@ -334,6 +334,9 @@ export const SystemWindow: React.FC<SystemWindowProps> = ({
                 <p className="text-[12.5px] text-[#222] leading-relaxed pt-1">
                   {siteConfig.tagline}
                 </p>
+                <p className="text-[11px] text-[#555] leading-relaxed border-t border-[#d6e4f5] mt-2 pt-2">
+                  {siteConfig.disclaimer}
+                </p>
 
                 <div className="flex flex-wrap gap-2 pt-2">
                   <button

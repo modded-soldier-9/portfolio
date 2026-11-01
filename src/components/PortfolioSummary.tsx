@@ -19,7 +19,7 @@ export default function PortfolioSummary() {
   return (
     <section
       id="portfolio-summary"
-      className="sr-only"
+      className="sr-only pointer-events-none"
       aria-label={`${siteConfig.name} portfolio summary`}
     >
       <h1>{siteConfig.name}</h1>
@@ -145,10 +145,7 @@ export default function PortfolioSummary() {
         </p>
       </section>
 
-      <p>
-        Desktop-inspired portfolio interface. Not affiliated with Microsoft. Windows is a
-        trademark of Microsoft Corporation.
-      </p>
+      <p>{siteConfig.disclaimer}</p>
     </section>
   );
 }

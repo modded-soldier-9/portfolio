@@ -339,7 +339,7 @@ export function HeartsGame() {
         setCurrentTurn(nextP);
         setStatusMessage(
           nextP === 'south'
-            ? 'Your turn — click a highlighted card to play.'
+            ? 'Your turn - click a highlighted card to play.'
             : `${PLAYER_NAMES[nextP]} is thinking...`
         );
       } else {
@@ -417,7 +417,7 @@ export function HeartsGame() {
             setCurrentTurn(winner);
             setStatusMessage(
               winner === 'south'
-                ? 'You won the trick — lead any valid card.'
+                ? 'You won the trick - lead any valid card.'
                 : `${PLAYER_NAMES[winner]} leads the next trick.`
             );
           }
@@ -509,7 +509,7 @@ export function HeartsGame() {
     setCurrentTurn(starter);
     setStatusMessage(
       starter === 'south'
-        ? 'Cards passed! You have the 2 of Clubs — click it to lead.'
+        ? 'Cards passed! You have the 2 of Clubs - click it to lead.'
         : `Cards passed! ${PLAYER_NAMES[starter]} leads with the 2 of Clubs.`
     );
   };
