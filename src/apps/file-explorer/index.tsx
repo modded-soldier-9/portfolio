@@ -2,10 +2,11 @@
 
 import React, { useState, useMemo } from 'react';
 import { siteConfig } from '@/config/site';
-import { projects, type Project } from '@/data/projects';
+import { featuredProjects, projects, type Project } from '@/data/projects';
 import { experiences, type Experience } from '@/data/experience';
 import { certificationGroups } from '@/data/certifications';
 import { education } from '@/data/education';
+import { skillGroups } from '@/data/skills';
 import {
   ExplorerIcon,
   FolderIcon,
@@ -26,32 +27,6 @@ import {
 import { aeroSound } from '@/components/AeroSound';
 import { useOS, type ExplorerSection } from '@/state/os-store';
 import type { AppModuleContract } from '@/apps/types';
-
-const skillGroups = [
-  {
-    title: 'Security & Vulnerability Research',
-    level: '99%',
-    skills: [
-      'Threat Detection',
-      'Vulnerability Assessment',
-      'Penetration Testing',
-      'Network Security',
-      'API Security',
-      'Security Auditing',
-      'Responsible Disclosure',
-    ],
-  },
-  {
-    title: 'Cloud & Infrastructure Operations',
-    level: '95%',
-    skills: ['AWS', 'Cloud Architecture', 'Linux', 'System Administration', 'Disaster Recovery'],
-  },
-  {
-    title: 'Full-Stack Web Development',
-    level: '98%',
-    skills: ['Python', 'JavaScript', 'TypeScript', 'Next.js', 'React', 'SQL', 'API Development', 'HTML/CSS'],
-  },
-];
 
 export interface ExplorerWindowProps {
   activeSection?: ExplorerSection;
@@ -110,13 +85,15 @@ export const FileExplorerApp: React.FC<ExplorerWindowProps> = (props) => {
     []
   );
 
-  React.useEffect(() => {
+  const [trackedSection, setTrackedSection] = useState(activeSection);
+  if (trackedSection !== activeSection) {
+    setTrackedSection(activeSection);
     if (history[historyIdx] !== activeSection) {
       const nextHist = [...history.slice(0, historyIdx + 1), activeSection];
       setHistory(nextHist);
       setHistoryIdx(nextHist.length - 1);
     }
-  }, [activeSection, history, historyIdx]);
+  }
 
   const navigateTo = (sec: ExplorerSection) => {
     aeroSound.playClick();
@@ -1011,7 +988,7 @@ export const FileExplorerApp: React.FC<ExplorerWindowProps> = (props) => {
                   >
                     <ComputerIcon size={42} className="shrink-0" />
                     <div className="flex-1 min-w-0 space-y-1">
-                      <div className="font-semibold text-[12.5px] text-[#111]">Local Disk (C:) — ELSHEIKH_OS</div>
+                      <div className="font-semibold text-[12.5px] text-[#111]">Local Disk (C:) - ELSHEIKH_OS</div>
                       <div className="w7-progressbar !h-[13px]">
                         <div
                           className="h-full bg-gradient-to-r from-[#0284c7] to-[#38bdf8]"
@@ -1028,7 +1005,7 @@ export const FileExplorerApp: React.FC<ExplorerWindowProps> = (props) => {
                   >
                     <SecurityShieldIcon size={42} className="shrink-0" />
                     <div className="flex-1 min-w-0 space-y-1">
-                      <div className="font-semibold text-[12.5px] text-[#111]">Security Vault (D:) — 99.9% Uptime</div>
+                      <div className="font-semibold text-[12.5px] text-[#111]">Security Vault (D:) - 99.9% Uptime</div>
                       <div className="w7-progressbar !h-[13px]">
                         <div className="w7-progressbar-fill" style={{ width: '64%' }} />
                       </div>
@@ -1208,7 +1185,9 @@ export const FileExplorerApp: React.FC<ExplorerWindowProps> = (props) => {
               {/* Featured Projects Section */}
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="text-[13px] font-semibold text-[#003399]">Featured Projects (6)</span>
+                  <span className="text-[13px] font-semibold text-[#003399]">
+                    Featured Projects ({featuredProjects.length})
+                  </span>
                   <button
                     type="button"
                     onClick={() => navigateTo('projects')}
@@ -1218,12 +1197,21 @@ export const FileExplorerApp: React.FC<ExplorerWindowProps> = (props) => {
                   </button>
                 </div>
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-2">
-                  {projects.map((project) => (
+                  {featuredProjects.map((project) => (
                     <div
                       key={project.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => {
                         setSelectedProject(project);
                         setOverviewFocus('project');
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setSelectedProject(project);
+                          setOverviewFocus('project');
+                        }
                       }}
                       className={`w7-item-box p-3 flex items-start gap-3 ${
                         overviewFocus === 'project' && selectedProject?.id === project.id ? 'selected' : ''
@@ -1233,10 +1221,16 @@ export const FileExplorerApp: React.FC<ExplorerWindowProps> = (props) => {
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center justify-between gap-1.5">
                           <h3 className="font-semibold text-[12.5px] text-[#111]">{project.name}</h3>
-                          <span className="text-[10.5px] text-[#3b5978] bg-[#eef5fc] px-1.5 py-0.5 rounded border border-[#c8dcf2] shrink-0">
-                            {project.type}
-                          </span>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <span className="text-[10.5px] text-[#3b5978] bg-[#eef5fc] px-1.5 py-0.5 rounded border border-[#c8dcf2]">
+                              {project.type}
+                            </span>
+                            <span className="text-[10.5px] text-[#555] font-mono">{project.year}</span>
+                          </div>
                         </div>
+                        <p className="text-[11.5px] text-[#003399] font-medium mt-0.5">
+                          {project.highlight}
+                        </p>
                         <p className="text-[11.5px] text-[#333] line-clamp-2 mt-0.5">{project.description}</p>
                         <div className="flex flex-wrap items-center justify-between gap-2 mt-2">
                           <div className="flex flex-wrap gap-1">
@@ -1421,10 +1415,14 @@ export const FileExplorerApp: React.FC<ExplorerWindowProps> = (props) => {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <h3 className="text-[13px] font-semibold text-[#111]">{project.name}</h3>
-                        <span className="text-[11px] text-[#003399] bg-[#eef5fc] px-2 py-0.5 rounded border border-[#c8dcf2] shrink-0">
-                          {project.type}
-                        </span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className="text-[11px] text-[#003399] bg-[#eef5fc] px-2 py-0.5 rounded border border-[#c8dcf2]">
+                            {project.type}
+                          </span>
+                          <span className="text-[11px] text-[#555] font-mono">{project.year}</span>
+                        </div>
                       </div>
+                      <p className="text-[12px] text-[#003399] font-medium mt-1">{project.highlight}</p>
                       <p className="text-[12px] text-[#333] mt-1 leading-relaxed">{project.description}</p>
                       <div className="flex flex-wrap items-center justify-between gap-2 mt-2.5">
                         <div className="flex flex-wrap gap-1.5">
@@ -1725,7 +1723,16 @@ export const FileExplorerApp: React.FC<ExplorerWindowProps> = (props) => {
                 <div className="flex flex-col items-center text-center pb-3 border-b border-[#d5e2f0]">
                   <ProjectAppIcon size={54} />
                   <h4 className="font-semibold text-[13.5px] text-[#003399] mt-2">{selectedProject.name}</h4>
-                  <span className="text-[11px] text-[#4c627d]">{selectedProject.type}</span>
+                  <span className="text-[11px] text-[#4c627d]">
+                    {selectedProject.type} · {selectedProject.year}
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="text-[11px] font-semibold text-[#4c627d] uppercase">Highlight</div>
+                  <p className="text-[11.5px] text-[#003399] font-medium leading-relaxed">
+                    {selectedProject.highlight}
+                  </p>
                 </div>
 
                 <div className="space-y-1.5">
@@ -1787,7 +1794,8 @@ export const FileExplorerApp: React.FC<ExplorerWindowProps> = (props) => {
             <span className="font-semibold">{sectionLabels[activeSection]}</span>
             <span className="mx-2 text-[#7a93b0]">|</span>
             <span className="text-[#3b5978]">
-              6 Projects &middot; 4 Roles &middot; {totalCertCount} Certifications &middot; {files.length} Virtual Files
+              {featuredProjects.length} Projects &middot; 4 Roles &middot; {totalCertCount} Certifications &middot;{' '}
+              {files.length} Virtual Files
             </span>
           </div>
         </div>
@@ -1805,7 +1813,7 @@ export const fileExplorerModule: AppModuleContract = {
   id: 'explorer',
   getWindowConfig: () => ({
     id: 'explorer',
-    title: `${siteConfig.name} — Windows Explorer`,
+    title: `${siteConfig.name} - Portfolio Explorer`,
     shortLabel: 'File Explorer',
     glowColor: 'rgba(250, 204, 21, 0.62)',
     defaultPos: { x: 196, y: 18, width: 885, height: 575 },

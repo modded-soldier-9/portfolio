@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { createBootSequenceTimeline } from '@/core/animation';
+import { createBootSequenceTimeline, isReducedMotion } from '@/core/animation';
 import { siteConfig } from '@/config/site';
 
 interface BootSequenceProps {
@@ -35,6 +35,11 @@ export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete, onSkipTo
   const dot3Ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    if (isReducedMotion()) {
+      onComplete();
+      return;
+    }
+
     const tl = createBootSequenceTimeline(
       {
         container: containerRef.current,

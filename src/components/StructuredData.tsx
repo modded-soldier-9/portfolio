@@ -1,8 +1,18 @@
 import { siteConfig } from '@/config/site';
+import { featuredProjects } from '@/data/projects';
+import { skillGroups } from '@/data/skills';
+
+/**
+ * Serialize JSON-LD safely for embedding in HTML.
+ * Escapes `<` to prevent `</script>` breakouts inside the payload.
+ */
+function toJsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c');
+}
 
 /**
  * JSON-LD structured data for SEO.
- * Server component — no 'use client' needed since it only emits static script tags.
+ * Server component - no 'use client' needed since it only emits static script tags.
  */
 const StructuredData = () => {
   const { url } = siteConfig;
@@ -16,6 +26,7 @@ const StructuredData = () => {
     url,
     image: `${url}/personal.jpg`,
     sameAs: [siteConfig.github.url, siteConfig.linkedin],
+    email: siteConfig.contact.email,
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'South Africa',
@@ -29,18 +40,7 @@ const StructuredData = () => {
       { '@type': 'EducationalOrganization', name: 'Richfield Graduate Institute of Technology' },
       { '@type': 'EducationalOrganization', name: 'AWS Academy' },
     ],
-    knowsAbout: [
-      'Cybersecurity',
-      'Cloud Computing',
-      'Web Development',
-      'IT Management',
-      'Python',
-      'JavaScript',
-      'AWS',
-      'Security Protocols',
-      'API Development',
-      'Network Security',
-    ],
+    knowsAbout: skillGroups.flatMap((group) => group.skills).slice(0, 16),
     hasCredential: [
       {
         '@type': 'EducationalOccupationalCredential',
@@ -97,6 +97,19 @@ const StructuredData = () => {
     inLanguage: 'en-US',
   };
 
+  const projectsSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Featured Projects',
+    itemListElement: featuredProjects.map((project, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: project.name,
+      description: project.description,
+      url: project.liveUrl || project.githubUrl || `${url}#projects`,
+    })),
+  };
+
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -113,15 +126,19 @@ const StructuredData = () => {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        dangerouslySetInnerHTML={{ __html: toJsonLd(personSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        dangerouslySetInnerHTML={{ __html: toJsonLd(websiteSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: toJsonLd(projectsSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: toJsonLd(breadcrumbSchema) }}
       />
     </>
   );

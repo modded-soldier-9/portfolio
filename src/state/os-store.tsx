@@ -3,9 +3,10 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { siteConfig } from '@/config/site';
 import { experiences } from '@/data/experience';
-import { projects } from '@/data/projects';
+import { featuredProjects } from '@/data/projects';
 import { certificationGroups } from '@/data/certifications';
 import { education } from '@/data/education';
+import { skillGroups } from '@/data/skills';
 import { aeroSound } from '@/components/AeroSound';
 
 export type SessionPhase = 'booting' | 'login' | 'desktop' | 'sleeping';
@@ -86,7 +87,7 @@ export interface ManagedWindowState {
 export function buildDefaultResumeText(): string {
   const lines = [
     `========================================================================`,
-    `${siteConfig.name.toUpperCase()} — ${siteConfig.role.toUpperCase()}`,
+    `${siteConfig.name.toUpperCase()} - ${siteConfig.role.toUpperCase()}`,
     `Location : ${siteConfig.location}`,
     `Email    : ${siteConfig.contact.email} | Phone/WA: ${siteConfig.contact.phoneDisplay}`,
     `GitHub   : ${siteConfig.github.url} | LinkedIn: ${siteConfig.linkedin}`,
@@ -98,32 +99,31 @@ export function buildDefaultResumeText(): string {
     ``,
     `EXPERIENCE`,
     ...experiences.flatMap((exp) => [
-      `• ${exp.title} — ${exp.company} (${exp.duration})`,
+      `• ${exp.title} - ${exp.company} (${exp.duration})`,
       `  ${exp.description}`,
       ...(exp.achievements.length ? [`  Achievements: ${exp.achievements.join(' · ')}`] : []),
       `  Skills: ${exp.skills.join(', ')}`,
       ``,
     ]),
     `PROJECTS`,
-    ...projects.flatMap((proj) => [
-      `• ${proj.name} [${proj.type}] — Tech: ${proj.tech.join(', ')}`,
+    ...featuredProjects.flatMap((proj) => [
+      `• ${proj.name} [${proj.type}, ${proj.year}] - ${proj.highlight}`,
       `  ${proj.description}`,
+      `  Tech: ${proj.tech.join(', ')}`,
       ...(proj.liveUrl ? [`  Live: ${proj.liveUrl}`] : []),
       ...(proj.githubUrl ? [`  Source: ${proj.githubUrl}`] : []),
       ``,
     ]),
     `SKILLS`,
-    `• Security    : Threat Detection, Vulnerability Assessment, Penetration Testing, Network Security, API Security, Security Auditing`,
-    `• Cloud & Ops : AWS, Cloud Architecture, Linux, System Administration, Disaster Recovery`,
-    `• Development : Python, JavaScript, TypeScript, Next.js, React, SQL, API Development, HTML/CSS`,
+    ...skillGroups.map((group) => `• ${group.title}: ${group.skills.join(', ')}`),
     ``,
     `EDUCATION`,
     ...education.map(
-      (edu) => `• ${edu.degree} — ${edu.institution} ${edu.duration ? `(${edu.duration})` : ''}`
+      (edu) => `• ${edu.degree} - ${edu.institution} ${edu.duration ? `(${edu.duration})` : ''}`
     ),
     ``,
     `MENTORSHIP`,
-    `• Mentored student teams at AFRITECH — three groups secured top-3 finishes building cashless campus payment solutions.`,
+    `• Mentored student teams at AFRITECH - three groups secured top-3 finishes building cashless campus payment solutions.`,
     `• Delivers talks on cybersecurity careers and technical problem-solving.`,
     ``,
     `CERTIFICATIONS (15 VERIFIED CREDENTIALS)`,
@@ -175,7 +175,7 @@ const INITIAL_VIRTUAL_FILES: VirtualFile[] = [
     folder: 'Documents',
     type: 'txt',
     content: [
-      'WINDOWS 7 AERO SIMULATION — SYSTEM NOTES',
+      'WINDOWS 7 AERO SIMULATION - SYSTEM NOTES',
       '=========================================',
       '• Built with modular architecture (/core, /apps, /games, /state).',
       '• Powered by GSAP timelines and 100% vector SVG assets.',
@@ -209,26 +209,26 @@ const INITIAL_VIRTUAL_FILES: VirtualFile[] = [
 export const INITIAL_MANAGED_WINDOWS: ManagedWindowState[] = [
   {
     id: 'explorer',
-    title: `${siteConfig.name} — Windows Explorer`,
+    title: `${siteConfig.name} - Windows Explorer`,
     shortLabel: 'File Explorer',
     glowColor: 'rgba(250, 204, 21, 0.62)',
     isOpen: false,
     isMinimized: false,
     zIndex: 20,
     snap: 'none',
-    defaultPos: { x: 196, y: 18, width: 885, height: 575 },
+    defaultPos: { x: 120, y: 20, width: 760, height: 540 },
     pinned: true,
   },
   {
     id: 'system',
-    title: `System — ${siteConfig.name} (${siteConfig.role})`,
+    title: `System - ${siteConfig.name} (${siteConfig.role})`,
     shortLabel: 'System Properties',
     glowColor: 'rgba(56, 189, 248, 0.65)',
     isOpen: true,
     isMinimized: false,
     zIndex: 30,
     snap: 'none',
-    defaultPos: { x: 260, y: 35, width: 840, height: 570 },
+    defaultPos: { x: 120, y: 28, width: 720, height: 520 },
     pinned: true,
   },
   {
@@ -245,7 +245,7 @@ export const INITIAL_MANAGED_WINDOWS: ManagedWindowState[] = [
   },
   {
     id: 'notepad',
-    title: `Resume_Mohamed_Elsheikh.txt — Notepad`,
+    title: `Resume_Mohamed_Elsheikh.txt - Notepad`,
     shortLabel: 'Notepad',
     glowColor: 'rgba(34, 211, 238, 0.62)',
     isOpen: false,
@@ -281,7 +281,7 @@ export const INITIAL_MANAGED_WINDOWS: ManagedWindowState[] = [
   },
   {
     id: 'security',
-    title: `Cyber Security & Credentials Center — 15+ Certifications`,
+    title: `Cyber Security & Credentials Center - 15+ Certifications`,
     shortLabel: 'Security Center',
     glowColor: 'rgba(34, 197, 94, 0.62)',
     isOpen: false,
@@ -293,7 +293,7 @@ export const INITIAL_MANAGED_WINDOWS: ManagedWindowState[] = [
   },
   {
     id: 'contact',
-    title: `New Message — Contact ${siteConfig.name}`,
+    title: `New Message - Contact ${siteConfig.name}`,
     shortLabel: 'Contact Mohamed',
     glowColor: 'rgba(59, 130, 246, 0.65)',
     isOpen: false,
@@ -353,7 +353,7 @@ export const INITIAL_MANAGED_WINDOWS: ManagedWindowState[] = [
   },
   {
     id: 'personalize',
-    title: `Personalization — Aero Glass & Desktop Appearance`,
+    title: `Personalization - Aero Glass & Desktop Appearance`,
     shortLabel: 'Personalization',
     glowColor: 'rgba(168, 85, 247, 0.62)',
     isOpen: false,
@@ -421,17 +421,16 @@ interface OSContextValue {
 const OSContext = createContext<OSContextValue | null>(null);
 
 export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [sessionPhase, setSessionPhase] = useState<SessionPhase>('desktop');
-
-  // Check URL query parameters on mount (?boot=1 restarts the boot and logon experience)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('boot') === '1') {
-        setSessionPhase('booting');
-      }
+  const [sessionPhase, setSessionPhase] = useState<SessionPhase>(() => {
+    if (typeof window === 'undefined') return 'desktop';
+    try {
+      return new URLSearchParams(window.location.search).get('boot') === '1'
+        ? 'booting'
+        : 'desktop';
+    } catch {
+      return 'desktop';
     }
-  }, []);
+  });
   const [userProfile, setUserProfile] = useState<UserProfile>({
     name: siteConfig.name,
     role: siteConfig.role,
@@ -537,7 +536,7 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
       const found = files.find((f) => f.id === fileId);
       setActiveNotepadFileId(fileId);
       if (found) {
-        updateWindowTitle('notepad', `${found.name} — Notepad`);
+        updateWindowTitle('notepad', `${found.name} - Notepad`);
       }
       openWindow('notepad');
     },

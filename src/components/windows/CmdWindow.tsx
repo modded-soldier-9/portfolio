@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { siteConfig } from '@/config/site';
-import { projects } from '@/data/projects';
+import { featuredProjects } from '@/data/projects';
+import { skillGroups } from '@/data/skills';
 import { experiences } from '@/data/experience';
 import { certificationGroups } from '@/data/certifications';
 import { education } from '@/data/education';
@@ -57,7 +58,7 @@ export const CmdWindow: React.FC<{ onOpenWindow: (id: string) => void }> = ({ on
         response = [
           'Available Commands:',
           '  whoami       Display Mohamed Elsheikh profile & summary',
-          '  projects     List all 6 featured projects & live URLs',
+          '  projects     List featured projects & live URLs',
           '  experience   Display career leadership & work history',
           '  skills       Display Security, Cloud & Development stack',
           '  certs        List all 15 verified industry certifications',
@@ -122,10 +123,10 @@ export const CmdWindow: React.FC<{ onOpenWindow: (id: string) => void }> = ({ on
         break;
 
       case 'projects':
-        response = projects
+        response = featuredProjects
           .map(
             (p, idx) =>
-              `[${idx + 1}] ${p.name} (${p.type})\n    Tech : ${p.tech.join(', ')}\n    Desc : ${p.description}${
+              `[${idx + 1}] ${p.name} (${p.type}, ${p.year})\n    Focus: ${p.highlight}\n    Tech : ${p.tech.join(', ')}\n    Desc : ${p.description}${
                 p.liveUrl ? `\n    Live : ${p.liveUrl}` : ''
               }${p.githubUrl ? `\n    Repo : ${p.githubUrl}` : ''}`
           )
@@ -144,11 +145,9 @@ export const CmdWindow: React.FC<{ onOpenWindow: (id: string) => void }> = ({ on
         break;
 
       case 'skills':
-        response = [
-          '[SECURITY]    Threat Detection, Vulnerability Assessment, Penetration Testing, Network Security, API Security, Security Auditing',
-          '[CLOUD & OPS] AWS, Cloud Architecture, Linux, System Administration, Disaster Recovery',
-          '[DEVELOPMENT] Python, JavaScript, TypeScript, Next.js, React, SQL, API Development, HTML/CSS',
-        ].join('\n');
+        response = skillGroups
+          .map((group) => `[${group.title.toUpperCase()}] (${group.level})\n  ${group.skills.join(', ')}`)
+          .join('\n\n');
         break;
 
       case 'certs':
@@ -165,8 +164,8 @@ export const CmdWindow: React.FC<{ onOpenWindow: (id: string) => void }> = ({ on
       case 'education':
       case 'mentorship':
         response =
-          education.map((ed) => `* ${ed.degree} — ${ed.institution} ${ed.duration ? `(${ed.duration})` : ''}`).join('\n') +
-          '\n\n[MENTORSHIP]\n* Mentored student teams at AFRITECH — three groups secured top-3 finishes building cashless campus payment solutions.\n* Speaker on cybersecurity careers and technical problem-solving.';
+          education.map((ed) => `* ${ed.degree} - ${ed.institution} ${ed.duration ? `(${ed.duration})` : ''}`).join('\n') +
+          '\n\n[MENTORSHIP]\n* Mentored student teams at AFRITECH - three groups secured top-3 finishes building cashless campus payment solutions.\n* Speaker on cybersecurity careers and technical problem-solving.';
         break;
 
       case 'contact':

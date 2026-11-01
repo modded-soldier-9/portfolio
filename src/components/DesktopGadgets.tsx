@@ -19,9 +19,12 @@ export const DesktopGadgets: React.FC<DesktopGadgetsProps> = ({
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
-    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
+    const boot = window.setTimeout(() => setNow(new Date()), 0);
+    return () => {
+      clearInterval(id);
+      window.clearTimeout(boot);
+    };
   }, []);
 
   const hours = now ? now.getHours() % 12 : 10;
@@ -35,7 +38,7 @@ export const DesktopGadgets: React.FC<DesktopGadgetsProps> = ({
   return (
     <aside
       aria-label="Desktop Gadgets"
-      className="fixed top-3 right-3 z-[5] hidden xl:flex flex-col gap-3 w-[196px] select-none pointer-events-auto"
+      className="fixed top-3 right-3 z-[5] hidden min-[1400px]:flex flex-col gap-3 w-[196px] select-none pointer-events-auto"
     >
       {/* 1. Analog & Digital Clock Gadget (Johannesburg SAST) */}
       <div className="group relative rounded-xl p-3 bg-gradient-to-b from-white/25 via-black/35 to-black/55 backdrop-blur-md border border-white/35 shadow-[0_6px_20px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.45)] text-white flex flex-col items-center">

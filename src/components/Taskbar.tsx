@@ -54,7 +54,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
 }) => {
   const [orbHover, setOrbHover] = useState(false);
   const [hoveredAppId, setHoveredAppId] = useState<string | null>(null);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(() => aeroSound.enabled);
   const [volumeLevel, setVolumeLevel] = useState(80);
   const [showVolumeFlyout, setShowVolumeFlyout] = useState(false);
   const [showNetworkFlyout, setShowNetworkFlyout] = useState(false);
@@ -66,9 +66,12 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   const clockFlyoutRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setNow(new Date());
     const timer = setInterval(() => setNow(new Date()), 10000);
-    return () => clearInterval(timer);
+    const boot = window.setTimeout(() => setNow(new Date()), 0);
+    return () => {
+      clearInterval(timer);
+      window.clearTimeout(boot);
+    };
   }, []);
 
   useEffect(() => {
@@ -107,7 +110,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
   return (
     <header
       className="w7-taskbar"
-      role="navigation"
+      role="toolbar"
       aria-label="Taskbar"
       onClick={(e) => e.stopPropagation()}
     >
@@ -254,7 +257,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
           <div className="relative">
             <button
               type="button"
-              title={`${siteConfig.url.replace('https://', '')} — Internet access`}
+              title={`${siteConfig.url.replace('https://', '')} - Internet access`}
               onClick={() => {
                 aeroSound.playClick();
                 setShowClockFlyout(false);
@@ -407,7 +410,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
                       setVolumeLevel(val);
                       const active = val > 0;
                       setSoundEnabled(active);
-                      aeroSound.enabled = active;
+                      aeroSound.setEnabled(active);
                     }}
                     className="flex-1 accent-[#0066cc] cursor-pointer"
                   />
@@ -418,7 +421,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
                     onClick={() => {
                       const next = !soundEnabled;
                       setSoundEnabled(next);
-                      aeroSound.enabled = next;
+                      aeroSound.setEnabled(next);
                       if (next) aeroSound.playClick();
                     }}
                     className="win7-btn !px-2.5 !py-0.5 !text-[11px]"

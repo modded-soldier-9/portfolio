@@ -311,7 +311,10 @@ export function HeartsGame() {
   );
 
   useEffect(() => {
-    startHand(1, { south: 0, west: 0, north: 0, east: 0 });
+    const boot = window.setTimeout(() => {
+      startHand(1, { south: 0, west: 0, north: 0, east: 0 });
+    }, 0);
+    return () => window.clearTimeout(boot);
   }, [startHand]);
 
   // Execute card play for a player
@@ -336,7 +339,7 @@ export function HeartsGame() {
         setCurrentTurn(nextP);
         setStatusMessage(
           nextP === 'south'
-            ? 'Your turn — click a highlighted card to play.'
+            ? 'Your turn - click a highlighted card to play.'
             : `${PLAYER_NAMES[nextP]} is thinking...`
         );
       } else {
@@ -414,7 +417,7 @@ export function HeartsGame() {
             setCurrentTurn(winner);
             setStatusMessage(
               winner === 'south'
-                ? 'You won the trick — lead any valid card.'
+                ? 'You won the trick - lead any valid card.'
                 : `${PLAYER_NAMES[winner]} leads the next trick.`
             );
           }
@@ -506,7 +509,7 @@ export function HeartsGame() {
     setCurrentTurn(starter);
     setStatusMessage(
       starter === 'south'
-        ? 'Cards passed! You have the 2 of Clubs — click it to lead.'
+        ? 'Cards passed! You have the 2 of Clubs - click it to lead.'
         : `Cards passed! ${PLAYER_NAMES[starter]} leads with the 2 of Clubs.`
     );
   };

@@ -21,20 +21,26 @@ export function useViewport(): ViewportState {
     if (typeof window === 'undefined') return;
 
     const mediaQuery = window.matchMedia('(max-width: 767px)');
-    setIsMobile(mediaQuery.matches);
-
     const handler = (e: MediaQueryListEvent) => {
       setIsMobile(e.matches);
     };
 
+    // Defer initial sync so the effect only schedules updates (React 19 lint).
+    const boot = window.setTimeout(() => setIsMobile(mediaQuery.matches), 0);
+
     if (mediaQuery.addEventListener) {
       mediaQuery.addEventListener('change', handler);
-      return () => mediaQuery.removeEventListener('change', handler);
-    } else {
-      // Fallback for older browsers
-      mediaQuery.addListener(handler);
-      return () => mediaQuery.removeListener(handler);
+      return () => {
+        window.clearTimeout(boot);
+        mediaQuery.removeEventListener('change', handler);
+      };
     }
+
+    mediaQuery.addListener(handler);
+    return () => {
+      window.clearTimeout(boot);
+      mediaQuery.removeListener(handler);
+    };
   }, []);
 
   const toggleForcedMode = useCallback((target: 'desktop' | 'mobile') => {

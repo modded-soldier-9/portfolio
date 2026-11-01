@@ -158,18 +158,33 @@ export const ContactWindow: React.FC = () => {
 
         {/* Bottom Dialog Buttons */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-          <span className="text-[11px] text-[#555]">
-            Direct Email:{' '}
-            <a href={`mailto:${siteConfig.contact.email}`} className="text-[#0066cc] hover:underline">
-              {siteConfig.contact.email}
-            </a>
-          </span>
+          <div className="text-[11px] text-[#555] space-y-0.5">
+            <div>
+              Direct Email:{' '}
+              <a href={`mailto:${siteConfig.contact.email}`} className="text-[#0066cc] hover:underline">
+                {siteConfig.contact.email}
+              </a>
+            </div>
+            <div>
+              WhatsApp:{' '}
+              <a
+                href={`https://wa.me/${siteConfig.contact.whatsappCountryCode}${siteConfig.contact.whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#0066cc] hover:underline"
+              >
+                {siteConfig.contact.phoneDisplay}
+              </a>
+              {' · '}
+              {siteConfig.location}
+            </div>
+          </div>
           <div className="flex items-center gap-2">
             <button type="submit" className="w7-btn default font-semibold px-4">
               Send via WhatsApp
             </button>
             <a
-              href={`mailto:${siteConfig.contact.email}`}
+              href={`mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(form.subject)}`}
               className="w7-btn px-4 hover:no-underline"
             >
               Email Directly

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { NotepadIcon } from '@/core/assets';
 import { aeroSound } from '@/components/AeroSound';
 import { useOS, buildDefaultResumeText } from '@/state/os-store';
@@ -32,9 +32,11 @@ export const NotepadApp: React.FC = () => {
   const [cursorPos, setCursorPos] = useState<{ ln: number; col: number }>({ ln: 1, col: 1 });
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [syncedFileId, setSyncedFileId] = useState<string | undefined>(activeNotepadFileId);
 
-  // Sync when activeNotepadFileId changes from File Explorer
-  useEffect(() => {
+  // Sync when activeNotepadFileId changes from File Explorer (render-phase adjust).
+  if (syncedFileId !== activeNotepadFileId) {
+    setSyncedFileId(activeNotepadFileId);
     const target = files.find((f) => f.id === activeNotepadFileId && f.type === 'txt');
     if (target) {
       setText(target.content);
@@ -42,7 +44,7 @@ export const NotepadApp: React.FC = () => {
       setFileId(target.id);
       setIsDirty(false);
     }
-  }, [activeNotepadFileId, files]);
+  }
 
   const flashNotice = (msg: string) => {
     setStatusNotice(msg);
@@ -57,7 +59,7 @@ export const NotepadApp: React.FC = () => {
     setFileId(undefined);
     setIsDirty(false);
     setMarkMode(false);
-    updateWindowTitle('notepad', 'Untitled.txt — Notepad');
+    updateWindowTitle('notepad', 'Untitled.txt - Notepad');
   };
 
   const handleSaveToVfs = (customName?: string) => {
@@ -79,7 +81,7 @@ export const NotepadApp: React.FC = () => {
     setFileId(saved.id);
     setFileName(saved.name);
     setIsDirty(false);
-    updateWindowTitle('notepad', `${saved.name} — Notepad`);
+    updateWindowTitle('notepad', `${saved.name} - Notepad`);
     flashNotice(`Saved "${saved.name}" to Libraries\\Documents`);
   };
 
@@ -104,7 +106,7 @@ export const NotepadApp: React.FC = () => {
     setFileName('Resume_Mohamed_Elsheikh.txt');
     setFileId('file-resume');
     setIsDirty(false);
-    updateWindowTitle('notepad', 'Resume_Mohamed_Elsheikh.txt — Notepad');
+    updateWindowTitle('notepad', 'Resume_Mohamed_Elsheikh.txt - Notepad');
     flashNotice('Loaded Resume_Mohamed_Elsheikh.txt');
   };
 
@@ -562,7 +564,7 @@ export const NotepadApp: React.FC = () => {
                     setFileName(f.name);
                     setFileId(f.id);
                     setIsDirty(false);
-                    updateWindowTitle('notepad', `${f.name} — Notepad`);
+                    updateWindowTitle('notepad', `${f.name} - Notepad`);
                     setShowOpenDialog(false);
                   }}
                   className="w-full w7-item-box flex items-center justify-between p-1.5 text-left"
@@ -675,7 +677,7 @@ export const NotepadApp: React.FC = () => {
               ? `✓ ${statusNotice}`
               : markMode
               ? 'Highlighter Mode: Click any line to mark/unmark'
-              : `${fileName}${isDirty ? ' *' : ''} — UTF-8`}
+              : `${fileName}${isDirty ? ' *' : ''} - UTF-8`}
           </span>
           <span className="shrink-0 ml-2">
             Ln {cursorPos.ln}, Col {cursorPos.col} &middot; {linesArray.length} lines &middot; 100%
@@ -690,7 +692,7 @@ export const notepadModule: AppModuleContract = {
   id: 'notepad',
   getWindowConfig: () => ({
     id: 'notepad',
-    title: 'Resume_Mohamed_Elsheikh.txt — Notepad',
+    title: 'Resume_Mohamed_Elsheikh.txt - Notepad',
     shortLabel: 'Notepad',
     glowColor: 'rgba(34, 211, 238, 0.62)',
     defaultPos: { x: 240, y: 46, width: 710, height: 505 },

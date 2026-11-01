@@ -3,7 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --w7-font: 9pt "Segoe UI", "SegoeUI", "Noto Sans", Tahoma, sans-serif;
+  --w7-font: 12px var(--font-noto-sans), "Noto Sans", Tahoma, sans-serif;
+  --font-display: var(--font-noto-sans), "Noto Sans", Tahoma, sans-serif;
+  --font-body: var(--font-noto-sans), "Noto Sans", Tahoma, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
   --w7-surface: #f0f0f0;
   --w7-el-bg: #f2f2f2;
   --w7-el-bg-d: #f4f4f4;
@@ -1001,5 +1004,12 @@ html, body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .w7-window,
+  .w7-start-menu,
+  .w7-desktop-icon {
+    transition: none !important;
+    animation: none !important;
   }
 }

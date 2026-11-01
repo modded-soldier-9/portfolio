@@ -32,6 +32,7 @@ import {
   type TaskbarAppItem,
 } from '@/components/Taskbar';
 import { aeroSound } from '@/components/AeroSound';
+import { rememberFocus, restoreFocus } from '@/lib/focus-return';
 import { useOS, type ExplorerSection } from '@/state/os-store';
 
 export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' }) => {
@@ -107,18 +108,6 @@ export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' 
     return () => clearTimeout(t);
   }, []);
 
-  // Close Start menu and context menu on Escape key
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setStartOpen(false);
-        setContextMenu(null);
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
-
   // Determine the topmost open & non-minimized window
   const activeWindowId = useMemo(() => {
     const openVisible = windows.filter((w) => w.isOpen && !w.isMinimized);
@@ -127,6 +116,45 @@ export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' 
       curr.zIndex > top.zIndex ? curr : top
     ).id;
   }, [windows]);
+
+  // Ctrl+Esc toggles Start; plain Escape closes menus; Ctrl+Alt+Arrow snaps windows
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey) {
+        e.preventDefault();
+        setContextMenu(null);
+        setStartOpen((open) => {
+          if (!open) rememberFocus();
+          else restoreFocus();
+          return !open;
+        });
+        return;
+      }
+      if (e.key === 'Escape') {
+        if (startOpen) restoreFocus();
+        setStartOpen(false);
+        setContextMenu(null);
+        return;
+      }
+      if (e.ctrlKey && e.altKey && activeWindowId) {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          setWindowSnap(activeWindowId, 'left');
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          setWindowSnap(activeWindowId, 'right');
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setWindowSnap(activeWindowId, 'maximized');
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          setWindowSnap(activeWindowId, 'none');
+        }
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [activeWindowId, setWindowSnap, startOpen]);
 
   const handleOpenWindow = (id: string) => {
     setStartOpen(false);
@@ -223,7 +251,7 @@ export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' 
     },
     {
       id: 'projects',
-      label: 'Projects (6)',
+      label: 'Projects',
       icon: <FolderIcon size={42} badgeColor="#2563eb" />,
       onLaunch: () => handleOpenExplorerAt('projects'),
     },
@@ -684,7 +712,7 @@ export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' 
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2 font-semibold text-[#003399]">
                 <SecurityShieldIcon size={18} />
-                <span>{siteConfig.name} — Windows 7 Aero</span>
+                <span>{siteConfig.name} - Desktop Portfolio</span>
               </div>
               <button
                 type="button"
@@ -708,7 +736,10 @@ export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' 
             onOpenWindow={handleOpenWindow}
             onOpenExplorerSection={handleOpenExplorerAt}
             onResetDesktop={handleResetDesktop}
-            onCloseMenu={() => setStartOpen(false)}
+            onCloseMenu={() => {
+              setStartOpen(false);
+              restoreFocus();
+            }}
           />
         )}
 
@@ -716,7 +747,13 @@ export const DesktopShell: React.FC<{ className?: string }> = ({ className = '' 
         <Taskbar
           apps={taskbarApps}
           startOpen={startOpen}
-          onToggleStart={() => setStartOpen(!startOpen)}
+          onToggleStart={() => {
+            setStartOpen((open) => {
+              if (!open) rememberFocus();
+              else restoreFocus();
+              return !open;
+            });
+          }}
           onTaskbarAppClick={handleTaskbarAppClick}
           onCloseApp={closeWindow}
           onShowDesktopClick={handleShowDesktopClick}

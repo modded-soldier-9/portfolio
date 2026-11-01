@@ -79,7 +79,7 @@ export const systemModule: AppModuleContract = {
   id: 'system',
   getWindowConfig: () => ({
     id: 'system',
-    title: `System — ${siteConfig.name} (${siteConfig.role})`,
+    title: `System - ${siteConfig.name} (${siteConfig.role})`,
     shortLabel: 'System Properties',
     glowColor: 'rgba(56, 189, 248, 0.65)',
     defaultPos: { x: 268, y: 44, width: 790, height: 535 },
@@ -99,7 +99,7 @@ export const securityModule: AppModuleContract = {
   id: 'security',
   getWindowConfig: () => ({
     id: 'security',
-    title: 'Cyber Security & Credentials Center — 15+ Certifications',
+    title: 'Cyber Security & Credentials Center - 15+ Certifications',
     shortLabel: 'Security Center',
     glowColor: 'rgba(34, 197, 94, 0.62)',
     defaultPos: { x: 220, y: 36, width: 780, height: 530 },
@@ -119,7 +119,7 @@ export const contactModule: AppModuleContract = {
   id: 'contact',
   getWindowConfig: () => ({
     id: 'contact',
-    title: `New Message — Contact ${siteConfig.name}`,
+    title: `New Message - Contact ${siteConfig.name}`,
     shortLabel: 'Contact Mohamed',
     glowColor: 'rgba(59, 130, 246, 0.65)',
     defaultPos: { x: 280, y: 62, width: 650, height: 470 },
@@ -159,7 +159,7 @@ export const personalizeModule: AppModuleContract = {
   id: 'personalize',
   getWindowConfig: () => ({
     id: 'personalize',
-    title: 'Personalization — Aero Glass & Desktop Appearance',
+    title: 'Personalization - Aero Glass & Desktop Appearance',
     shortLabel: 'Personalization',
     glowColor: 'rgba(168, 85, 247, 0.62)',
     defaultPos: { x: 260, y: 56, width: 710, height: 500 },
