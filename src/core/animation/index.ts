@@ -378,7 +378,7 @@ export function animateWindowOpen(el: HTMLElement | null): gsap.core.Tween | nul
     el,
     {
       opacity: 0,
-      scale: 0.95,
+      scale: 0.92,
       y: 8,
       filter: 'blur(2px)',
     },
@@ -387,8 +387,8 @@ export function animateWindowOpen(el: HTMLElement | null): gsap.core.Tween | nul
       scale: 1,
       y: 0,
       filter: 'blur(0px)',
-      duration: 0.2,
-      ease: AERO_EASE.out,
+      duration: 0.22,
+      ease: 'power2.out',
       clearProps: 'transform,filter',
     }
   );
@@ -410,8 +410,8 @@ export function animateWindowRestore(el: HTMLElement | null): gsap.core.Tween | 
       scale: 1,
       y: 0,
       filter: 'blur(0px)',
-      duration: 0.19,
-      ease: AERO_EASE.out,
+      duration: 0.25,
+      ease: 'power2.out',
       clearProps: 'transform,filter',
     }
   );
@@ -431,8 +431,8 @@ export function animateWindowMinimize(
     scale: 0.88,
     y: 26,
     filter: 'blur(2px)',
-    duration: 0.16,
-    ease: AERO_EASE.out,
+    duration: 0.25,
+    ease: 'power2.in',
     onComplete: () => {
       gsap.set(el, { clearProps: 'transform,filter,opacity' });
       onComplete();
@@ -454,8 +454,8 @@ export function animateWindowClose(
     scale: 0.95,
     y: 4,
     filter: 'blur(2px)',
-    duration: 0.14,
-    ease: AERO_EASE.out,
+    duration: 0.18,
+    ease: 'power2.in',
     onComplete: () => {
       gsap.set(el, { clearProps: 'transform,filter,opacity' });
       onComplete();
@@ -472,8 +472,8 @@ export function animateWindowSnapChange(el: HTMLElement | null): gsap.core.Tween
     {
       scale: 1,
       opacity: 1,
-      duration: 0.16,
-      ease: AERO_EASE.out,
+      duration: 0.2,
+      ease: 'power2.out',
       clearProps: 'transform,opacity',
     }
   );
@@ -497,8 +497,8 @@ export function animateStartMenuOpen(el: HTMLElement | null): gsap.core.Tween | 
       opacity: 1,
       y: 0,
       scale: 1,
-      duration: 0.16,
-      ease: AERO_EASE.out,
+      duration: 0.15,
+      ease: 'power2.out',
       clearProps: 'transform',
     }
   );

@@ -2,9 +2,12 @@ export const siteConfig = {
   name: 'Mohamed Elsheikh',
   initials: 'ME',
   role: 'Independent Security Researcher',
-  tagline: 'Security researcher and full-stack developer. I find vulnerabilities, build secure systems, and help the next generation of engineers get there faster.',
+  tagline:
+    'Security researcher and full-stack developer. I find vulnerabilities, build secure systems, and help the next generation of engineers get there faster.',
   url: 'https://mohamedelsheikh.dev',
   location: 'Johannesburg, South Africa',
+  disclaimer:
+    'Desktop-inspired portfolio interface. Not affiliated with Microsoft. Windows is a trademark of Microsoft Corporation.',
 
   contact: {
     email: 'mohamedelsheikh4859@gmail.com',

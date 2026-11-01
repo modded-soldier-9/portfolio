@@ -311,7 +311,10 @@ export function HeartsGame() {
   );
 
   useEffect(() => {
-    startHand(1, { south: 0, west: 0, north: 0, east: 0 });
+    const boot = window.setTimeout(() => {
+      startHand(1, { south: 0, west: 0, north: 0, east: 0 });
+    }, 0);
+    return () => window.clearTimeout(boot);
   }, [startHand]);
 
   // Execute card play for a player

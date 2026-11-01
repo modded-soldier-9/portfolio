@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { siteConfig } from '@/config/site';
-import { projects } from '@/data/projects';
+import { featuredProjects, projects } from '@/data/projects';
 import { experiences } from '@/data/experience';
 import { certificationGroups } from '@/data/certifications';
 import {
@@ -236,9 +236,15 @@ export const StartMenu: React.FC<StartMenuProps> = ({
     <div
       ref={menuRef}
       className="w7-start-menu"
-      role="dialog"
+      role="menu"
       aria-label="Start Menu"
       onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          e.stopPropagation();
+          onCloseMenu();
+        }
+      }}
     >
       {/* LEFT WHITE PANE */}
       <div className="w7-start-left">
@@ -429,7 +435,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
               <div className="font-semibold text-[#003399] px-1.5 py-0.5 border-b border-[#e2e8f0] pt-1">
                 Featured Projects (6)
               </div>
-              {projects.map((p) => (
+              {featuredProjects.map((p) => (
                 <button
                   key={p.id}
                   type="button"

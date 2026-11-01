@@ -291,7 +291,10 @@ export const SystemWindow: React.FC<SystemWindowProps> = ({
                   type="button"
                   onClick={() => {
                     aeroSound.playClick();
-                    window.open('https://wa.me/201021464357', '_blank');
+                    window.open(
+                      `https://wa.me/${siteConfig.contact.whatsappCountryCode}${siteConfig.contact.whatsapp}`,
+                      '_blank'
+                    );
                   }}
                   className="px-3 py-1.5 rounded bg-gradient-to-b from-[#22c55e] to-[#16a34a] hover:from-[#34d399] hover:to-[#15803d] text-white font-semibold text-[11.5px] border border-[#166534] shadow hover:shadow-md flex items-center gap-1.5 active:translate-y-0.5"
                 >
@@ -321,7 +324,7 @@ export const SystemWindow: React.FC<SystemWindowProps> = ({
                   <SecurityShieldIcon size={30} className="shrink-0" />
                   <div>
                     <div className="text-[16px] font-semibold text-[#111]">
-                      {siteConfig.name} — {siteConfig.role}
+                      {siteConfig.name} - {siteConfig.role}
                     </div>
                     <div className="text-[12px] text-[#3b4a5a]">
                       Security-First Full-Stack Architecture &middot; Service Pack 1 (2025)
@@ -576,9 +579,11 @@ export const SystemWindow: React.FC<SystemWindowProps> = ({
       </div>
 
       {/* Bottom Status Bar */}
-      <div className="h-[23px] px-3 bg-[#f0f0f0] border-t border-[#d0d0d0] flex items-center justify-between text-[11px] text-[#333] shrink-0">
+      <div className="min-h-[23px] px-3 py-1 bg-[#f0f0f0] border-t border-[#d0d0d0] flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 text-[11px] text-[#333] shrink-0">
         <span>{siteConfig.name} &middot; {siteConfig.role}</span>
-        <span className="hidden sm:inline">8+ yrs experience &middot; 15+ certifications &middot; BSc CS &amp; IT</span>
+        <span className="text-[10px] text-[#555]" title={siteConfig.disclaimer}>
+          {siteConfig.disclaimer}
+        </span>
       </div>
     </div>
   );

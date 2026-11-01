@@ -4,9 +4,10 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { siteConfig } from '@/config/site';
 import { experiences } from '@/data/experience';
-import { projects } from '@/data/projects';
+import { featuredProjects } from '@/data/projects';
 import { certificationGroups } from '@/data/certifications';
 import { education } from '@/data/education';
+import { skillGroups } from '@/data/skills';
 import { buildDefaultResumeText, useOS } from '@/state/os-store';
 import { aeroSound } from '@/components/AeroSound';
 import { SecurityShieldIcon, ComputerIcon, NotepadIcon } from '@/components/AeroIcons';
@@ -116,10 +117,10 @@ export const WP7MobileShell: React.FC<WP7MobileShellProps> = ({
           {/* 3. Projects Hub (Square) */}
           <WP7Tile
             title="Projects"
-            subtitle="6 Applications"
+            subtitle={`${featuredProjects.length} Applications`}
             size="square"
             accentColor="#008272"
-            badge={projects.length}
+            badge={featuredProjects.length}
             icon={
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
@@ -241,7 +242,10 @@ export const WP7MobileShell: React.FC<WP7MobileShellProps> = ({
               type="button"
               onClick={() => {
                 aeroSound.playClick();
-                window.open('https://wa.me/201021464357', '_blank');
+                window.open(
+                  `https://wa.me/${siteConfig.contact.whatsappCountryCode}${siteConfig.contact.whatsapp}`,
+                  '_blank'
+                );
               }}
               className="py-3 px-4 rounded bg-[#22c55e] hover:bg-[#16a34a] text-white font-semibold text-[14px] flex items-center justify-center gap-2 shadow"
             >
@@ -291,14 +295,18 @@ export const WP7MobileShell: React.FC<WP7MobileShellProps> = ({
         accentColor="#008272"
       >
         <div className="space-y-4">
-          {projects.map((proj) => (
+          {featuredProjects.map((proj) => (
             <div key={proj.id} className="bg-white/10 p-4 rounded border border-white/20 space-y-2">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <h2 className="text-[16px] font-semibold text-white">{proj.name}</h2>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-white/20 uppercase tracking-wide font-medium">
-                  {proj.type}
-                </span>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-white/20 uppercase tracking-wide font-medium">
+                    {proj.type}
+                  </span>
+                  <span className="text-[11px] text-white/70 font-mono">{proj.year}</span>
+                </div>
               </div>
+              <p className="text-[13px] text-[#93c5fd] font-medium">{proj.highlight}</p>
               <p className="text-[13px] text-white/80 leading-relaxed">{proj.description}</p>
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {proj.tech.map((t) => (
@@ -381,18 +389,15 @@ export const WP7MobileShell: React.FC<WP7MobileShellProps> = ({
 
           <div className="bg-white/10 p-4 rounded border border-white/20 space-y-3">
             <h2 className="text-[15px] font-semibold text-white">Technical Proficiencies</h2>
-            <div>
-              <div className="font-medium text-[#fb923c] mb-1">Cybersecurity</div>
-              <p className="text-white/80 text-[12px]">Penetration Testing, Threat Modeling, Vulnerability Assessments, API Security, Network Auditing</p>
-            </div>
-            <div>
-              <div className="font-medium text-[#fb923c] mb-1">Development &amp; Architecture</div>
-              <p className="text-white/80 text-[12px]">TypeScript, Next.js, React, Python, Node.js, REST APIs, Tailwind CSS, SQL</p>
-            </div>
-            <div>
-              <div className="font-medium text-[#fb923c] mb-1">Cloud &amp; Infrastructure</div>
-              <p className="text-white/80 text-[12px]">AWS, Linux Administration, Docker, CI/CD, Git, Zero-Trust</p>
-            </div>
+            {skillGroups.map((group) => (
+              <div key={group.title}>
+                <div className="font-medium text-[#fb923c] mb-1 flex items-center justify-between gap-2">
+                  <span>{group.title}</span>
+                  <span className="text-[11px] text-white/60 font-mono">{group.level}</span>
+                </div>
+                <p className="text-white/80 text-[12px]">{group.skills.join(', ')}</p>
+              </div>
+            ))}
           </div>
         </div>
       </WP7DetailModal>
@@ -466,7 +471,7 @@ export const WP7MobileShell: React.FC<WP7MobileShellProps> = ({
       >
         <div className="space-y-3">
           <a
-            href="https://wa.me/201021464357"
+            href={`https://wa.me/${siteConfig.contact.whatsappCountryCode}${siteConfig.contact.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
             className="block p-4 rounded bg-[#22c55e]/20 hover:bg-[#22c55e]/30 border border-[#22c55e]/40 text-white"

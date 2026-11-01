@@ -402,7 +402,8 @@ export const AeroWindow: React.FC<AeroWindowProps> = ({
       <section
         ref={sectionRef}
         role="dialog"
-        aria-label={title}
+        aria-modal={!isMinimized}
+        aria-labelledby={`window-title-${id}`}
         aria-hidden={isMinimized}
         onMouseDown={handleFocus}
         style={style}
@@ -425,7 +426,9 @@ export const AeroWindow: React.FC<AeroWindowProps> = ({
             <div className="w-4 h-4 flex items-center justify-center shrink-0 overflow-hidden drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] [&>svg]:w-4 [&>svg]:h-4">
               {icon}
             </div>
-            <span className="w7-title-bar-text">{title}</span>
+            <span id={`window-title-${id}`} className="w7-title-bar-text">
+              {title}
+            </span>
           </div>
 
           {/* Top-Right Attached Caption Controls Pill */}

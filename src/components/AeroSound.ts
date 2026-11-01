@@ -1,8 +1,32 @@
 'use client';
 
+const SOUND_PREF_KEY = 'aero-sound-enabled';
+
 class AeroSoundManager {
   private ctx: AudioContext | null = null;
-  public enabled: boolean = true;
+  /** Muted by default (WCAG 1.4.2); user can enable from the taskbar tray. */
+  public enabled: boolean = false;
+
+  constructor() {
+    if (typeof window === 'undefined') return;
+    try {
+      const stored = window.localStorage.getItem(SOUND_PREF_KEY);
+      if (stored === '1') this.enabled = true;
+      if (stored === '0') this.enabled = false;
+    } catch {
+      // Ignore storage access errors
+    }
+  }
+
+  public setEnabled(next: boolean) {
+    this.enabled = next;
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem(SOUND_PREF_KEY, next ? '1' : '0');
+    } catch {
+      // Ignore storage access errors
+    }
+  }
 
   private getContext(): AudioContext | null {
     if (typeof window === 'undefined') return null;

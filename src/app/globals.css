@@ -3,7 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --w7-font: 9pt "Segoe UI", "SegoeUI", "Noto Sans", Tahoma, sans-serif;
+  --w7-font: 12px var(--font-noto-sans), "Noto Sans", Tahoma, sans-serif;
+  --font-display: var(--font-noto-sans), "Noto Sans", Tahoma, sans-serif;
+  --font-body: var(--font-noto-sans), "Noto Sans", Tahoma, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
   --w7-surface: #f0f0f0;
   --w7-el-bg: #f2f2f2;
   --w7-el-bg-d: #f4f4f4;
